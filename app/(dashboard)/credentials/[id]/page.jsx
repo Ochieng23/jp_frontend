@@ -495,6 +495,29 @@ export default function CredentialDetailPage() {
             </div>
           )}
 
+          {/* Supporting Document */}
+          {credential.document_url && (
+            <div className="card" style={{ marginBottom: 20 }}>
+              <div className="card-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h2 className="card-title">Supporting Document</h2>
+                <a
+                  href={credential.document_url}
+                  download={`${credential.title.replace(/\s+/g, '-').toLowerCase()}-document`}
+                  style={{ fontSize: 13, color: 'var(--color-primary)', textDecoration: 'none' }}
+                >
+                  Download
+                </a>
+              </div>
+              <div style={{ borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
+                <img
+                  src={credential.document_url}
+                  alt="Supporting document"
+                  style={{ width: '100%', display: 'block' }}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Raw VC JSON */}
           <div className="card">
             <div className="card-header">
