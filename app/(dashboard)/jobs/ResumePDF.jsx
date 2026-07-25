@@ -39,7 +39,7 @@ function fmtDate(d) {
 }
 
 /**
- * Auto-generated resume built from the holder's existing Job Passport profile
+ * Auto-generated resume built from the holder's existing Cazini profile
  * (credentials + work experience), used as the resume attachment when applying
  * to a job via the job board.
  */
@@ -101,7 +101,7 @@ export default function ResumePDF({ holder, credentials = [], workExperiences = 
         )}
 
         <Text style={styles.footer}>
-          Generated from this candidate&apos;s Job Passport profile — verified credentials and work
+          Generated from this candidate&apos;s Cazini profile — verified credentials and work
           history available at their passport share link.
         </Text>
       </Page>

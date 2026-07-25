@@ -104,7 +104,7 @@ export default function PassportPDF({ holder, credentials = [], pageUrl = '' }) 
   }).format(new Date());
 
   return (
-    <Document title={`${holder?.full_name || 'Passport'} — Job Passport`}>
+    <Document title={`${holder?.full_name || 'Passport'} — Cazini`}>
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
@@ -112,7 +112,7 @@ export default function PassportPDF({ holder, credentials = [], pageUrl = '' }) 
             <View style={styles.brandBox}>
               <Text style={styles.brandText}>JP</Text>
             </View>
-            <Text style={styles.brandName}>Job Passport</Text>
+            <Text style={styles.brandName}>Cazini</Text>
           </View>
           <View>
             <Text style={styles.headerRight}>Portable Employment Credential</Text>
@@ -184,7 +184,7 @@ export default function PassportPDF({ holder, credentials = [], pageUrl = '' }) 
             </Text>
             {pageUrl ? <Text style={styles.urlText}>{pageUrl}</Text> : null}
           </View>
-          <Text style={styles.pageNum}>Job Passport © {new Date().getFullYear()}</Text>
+          <Text style={styles.pageNum}>Cazini © {new Date().getFullYear()}</Text>
         </View>
       </Page>
     </Document>

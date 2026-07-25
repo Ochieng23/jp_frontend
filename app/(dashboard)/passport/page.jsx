@@ -206,7 +206,7 @@ export default function PassportPage() {
               )}
             </button>
             <div className="min-w-0 flex-1">
-              <p className="text-blue-200 text-xs font-semibold uppercase tracking-wider mb-1">Job Passport</p>
+              <p className="text-blue-200 text-xs font-semibold uppercase tracking-wider mb-1">Cazini</p>
               <h2 className="text-2xl font-bold break-words">{user?.full_name || '—'}</h2>
               <p className="text-blue-200 text-sm mt-1">{user?.nationality || '—'}</p>
             </div>

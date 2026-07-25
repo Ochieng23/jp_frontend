@@ -98,7 +98,7 @@ export default function PublicPassportPage() {
               marginBottom: 4,
             }}
           >
-            Job Passport
+            Cazini
           </div>
           <div
             style={{
@@ -208,7 +208,7 @@ export default function PublicPassportPage() {
             color: 'var(--color-text-muted)',
           }}
         >
-          Powered by Job Passport — portable employment credentials for everyone
+          Powered by Cazini — portable employment credentials for everyone
         </p>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import useAuthStore from '../../lib/store/authStore';
+import CaziniLogo from '../../components/CaziniLogo';
 
 const NATIONALITIES = [
   'Afghan','Albanian','Algerian','American','Argentine','Armenian','Australian',
@@ -100,11 +101,8 @@ export default function RegisterPage() {
       {/* Left panel */}
       <div className="hidden lg:flex w-2/5 bg-gradient-to-br from-blue-600 to-blue-900 flex-col items-center justify-center p-12 text-white">
         <div className="max-w-xs w-full">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-lg">JP</span>
-            </div>
-            <span className="font-bold text-2xl">Job Passport</span>
+          <div className="mb-10">
+            <CaziniLogo markSize={40} wordmarkClassName="text-2xl" variant="light" />
           </div>
           <h2 className="text-2xl font-bold mb-4 leading-tight">Start your journey today</h2>
           <p className="text-blue-50 text-sm leading-relaxed mb-8">
@@ -124,11 +122,8 @@ export default function RegisterPage() {
       {/* Right panel */}
       <div className="flex-1 flex items-start justify-center px-6 py-10 bg-white overflow-y-auto">
         <div className="w-full max-w-lg">
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">JP</span>
-            </div>
-            <span className="font-bold text-gray-900 text-lg">Job Passport</span>
+          <div className="lg:hidden mb-8">
+            <CaziniLogo markSize={30} wordmarkClassName="text-lg" />
           </div>
 
           <h1 className="text-2xl font-bold text-gray-900 mb-1">Create your passport</h1>

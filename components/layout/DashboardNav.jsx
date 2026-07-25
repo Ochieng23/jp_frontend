@@ -76,7 +76,7 @@ export default function DashboardNav() {
         aria-label="Dashboard navigation"
       >
         <Link href="/passport" className="nav-logo">
-          Job Passport
+          Cazini
         </Link>
 
         <div className="nav-section">

@@ -2,7 +2,7 @@ import './globals.css';
 import AuthProvider from '../components/AuthProvider';
 
 export const metadata = {
-  title: 'Job Passport — Portable Employment Credentials',
+  title: 'Cazini — Portable Employment Credentials',
   description:
     'A portable cross-jurisdiction employment credential system for refugees and mobile workers.',
 };

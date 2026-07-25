@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import useAuthStore from '../../lib/store/authStore';
+import CaziniLogo from '../CaziniLogo';
 
 const NAV_LINKS = [
   { href: '/passport', label: 'My Passport', icon: '🪪' },
@@ -11,6 +12,7 @@ const NAV_LINKS = [
   { href: '/work-history', label: 'Work History', icon: '💼' },
   { href: '/recognition', label: 'Recognition', icon: '🌍' },
   { href: '/jobs', label: 'Job Board', icon: '🔎' },
+  { href: '/jobs/applications', label: 'My Applications', icon: '📋' },
   { href: '/share', label: 'Share Links', icon: '🔗' },
   { href: '/settings', label: 'Settings', icon: '⚙️' },
 ];
@@ -55,11 +57,8 @@ export default function DashboardShell({ children }) {
       >
         {/* Logo */}
         <div className="px-4 h-16 flex items-center border-b border-gray-100 flex-shrink-0">
-          <Link href="/passport" className="flex items-center gap-2 no-underline">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-sm">JP</span>
-            </div>
-            <span className="font-bold text-gray-900 text-base">Job Passport</span>
+          <Link href="/passport" className="no-underline">
+            <CaziniLogo markSize={26} wordmarkClassName="text-base" />
           </Link>
         </div>
 
@@ -153,12 +152,7 @@ export default function DashboardShell({ children }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
-              <span className="text-white font-bold text-xs">JP</span>
-            </div>
-            <span className="font-bold text-gray-900 text-sm">Job Passport</span>
-          </div>
+          <CaziniLogo markSize={22} wordmarkClassName="text-sm" />
         </div>
 
         <main className="flex-1 p-6">

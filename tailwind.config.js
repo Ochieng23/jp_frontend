@@ -10,15 +10,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Derived from jobs.workable.com's actual computed styles (the
+        // homepage/job-board design benchmark) — not a guessed palette.
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#e6f0ee',
+          100: '#c2dbd6',
+          300: '#5c9186',
+          500: '#00594d',
+          600: '#004038',
+          700: '#00332c',
+          900: '#001f1a',
         },
+        cream: '#faf8f4',
       },
       fontFamily: {
         sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],

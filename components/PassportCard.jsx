@@ -146,7 +146,7 @@ export default function PassportCard({ user, hasActiveCredential }) {
               marginBottom: 2,
             }}
           >
-            Job Passport
+            Cazini
           </div>
           <div
             style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em' }}

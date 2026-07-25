@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import QRCode from 'react-qr-code';
+import CaziniLogo from '../../../components/CaziniLogo';
 // @react-pdf/renderer is loaded dynamically inside the click handler to avoid
 // SSR crashes — the library requires a browser/canvas environment.
 
@@ -193,12 +194,7 @@ export default function PublicPassportPage() {
       {/* Top bar */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xs">JP</span>
-            </div>
-            <span className="font-bold text-gray-900 text-sm">Job Passport</span>
-          </div>
+          <CaziniLogo markSize={22} wordmarkClassName="text-sm" />
           <span className="text-xs text-gray-400">Shared credential profile</span>
         </div>
       </div>
@@ -370,7 +366,7 @@ export default function PublicPassportPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </svg>
                     </span>
-                    <span className="text-sm font-semibold text-gray-900">Job Passport</span>
+                    <span className="text-sm font-semibold text-gray-900">Cazini</span>
                   </div>
                   <p className="text-xs text-gray-500 leading-relaxed">
                     Read-only profile shared by the credential holder. Scan or share this link to verify.
@@ -381,7 +377,7 @@ export default function PublicPassportPage() {
             </div>
 
             <p className="text-center text-xs text-gray-400 pb-4">
-              Powered by Job Passport — portable employment credentials for everyone
+              Powered by Cazini — portable employment credentials for everyone
             </p>
           </>
         )}
