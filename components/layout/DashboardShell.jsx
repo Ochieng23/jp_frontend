@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/credentials', label: 'Credentials', icon: '📜' },
   { href: '/work-history', label: 'Work History', icon: '💼' },
   { href: '/recognition', label: 'Recognition', icon: '🌍' },
+  { href: '/jobs', label: 'Job Board', icon: '🔎' },
   { href: '/share', label: 'Share Links', icon: '🔗' },
   { href: '/settings', label: 'Settings', icon: '⚙️' },
 ];
