@@ -7,6 +7,16 @@
   body { @apply bg-gray-50 text-gray-900; }
 }
 
+/* Visible focus ring on all interactive elements — required, not optional. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #00594d;
+  outline-offset: 2px;
+}
+
 @layer utilities {
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-visibility: none; }

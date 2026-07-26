@@ -24,7 +24,8 @@ module.exports = {
         cream: '#faf8f4',
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        sans: ['var(--font-plex-sans)', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        mono: ['var(--font-plex-mono)', 'Menlo', 'monospace'],
       },
     },
   },

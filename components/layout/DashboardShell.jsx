@@ -58,7 +58,7 @@ export default function DashboardShell({ children }) {
         {/* Logo */}
         <div className="px-4 h-16 flex items-center border-b border-gray-100 flex-shrink-0">
           <Link href="/passport" className="no-underline">
-            <CaziniLogo markSize={26} wordmarkClassName="text-base" />
+            <CaziniLogo markSize={32} wordmarkClassName="text-base" />
           </Link>
         </div>
 
@@ -152,7 +152,7 @@ export default function DashboardShell({ children }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <CaziniLogo markSize={22} wordmarkClassName="text-sm" />
+          <CaziniLogo markSize={28} wordmarkClassName="text-sm" />
         </div>
 
         <main className="flex-1 p-6">

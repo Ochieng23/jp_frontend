@@ -1,43 +1,40 @@
+/* eslint-disable @next/next/no-img-element */
+
+// Full lockup (mark + "CAZINI" wordmark), transparent PNG. Natural ratio ~1.776:1.
+const LOCKUP_SRC = '/xuyt50qed9sr7tcuo6op-Sharpened.png';
+// Mark only (no wordmark), opaque white background — used only where the
+// wordmark isn't wanted and a solid background is acceptable.
+const MARK_ONLY_SRC = '/WhatsApp_Image_2025-05-23_at_15.08.32_hxckfh-Sharpened.jpg';
+
 /**
- * Cazini brand mark — a broken-ring "C" (concentric dashed arcs) + wordmark.
- * `showWordmark={false}` renders just the mark (e.g. for a favicon-sized slot).
+ * Cazini brand mark. `showWordmark={false}` renders just the mark.
+ * `variant="light"` recolors the lockup to solid white for dark backgrounds
+ * (the source PNG has real alpha transparency, so brightness(0) invert(1)
+ * cleanly turns the green mark + blue wordmark to white without a white box).
  */
 export default function CaziniLogo({ className = '', markSize = 32, showWordmark = true, wordmarkClassName = '', variant = 'default' }) {
-  const ringColor = variant === 'light' ? '#4ADE80' : '#1E7A34';
-  const wordmarkColor = variant === 'light' ? '#FFFFFF' : '#2E4BDA';
+  if (!showWordmark) {
+    return (
+      <img
+        src={MARK_ONLY_SRC}
+        alt="Cazini"
+        className={className}
+        style={{ height: markSize, width: 'auto', objectFit: 'contain' }}
+      />
+    );
+  }
 
   return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <svg
-        width={markSize}
-        height={markSize}
-        viewBox="0 0 100 100"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden={showWordmark ? 'true' : undefined}
-        role={showWordmark ? undefined : 'img'}
-      >
-        {!showWordmark && <title>Cazini</title>}
-        {[40, 30, 20].map((r) => (
-          <path
-            key={r}
-            d={`M ${50 + r * Math.cos((50 * Math.PI) / 180)} ${50 - r * Math.sin((50 * Math.PI) / 180)}
-                A ${r} ${r} 0 1 0 ${50 + r * Math.cos((50 * Math.PI) / 180)} ${50 + r * Math.sin((50 * Math.PI) / 180)}`}
-            stroke={ringColor}
-            strokeWidth={r === 40 ? 7 : 6}
-            strokeLinecap="butt"
-            strokeDasharray={r === 40 ? '20 8 34 8' : r === 30 ? '16 7 26 7' : '12 6 16 6'}
-          />
-        ))}
-      </svg>
-      {showWordmark && (
-        <span
-          className={`font-extrabold tracking-tight ${wordmarkClassName}`}
-          style={{ color: wordmarkColor }}
-        >
-          CAZINI
-        </span>
-      )}
-    </span>
+    <img
+      src={LOCKUP_SRC}
+      alt="Cazini"
+      className={`${wordmarkClassName} ${className}`}
+      style={{
+        height: markSize,
+        width: 'auto',
+        objectFit: 'contain',
+        filter: variant === 'light' ? 'brightness(0) invert(1)' : undefined,
+      }}
+    />
   );
 }

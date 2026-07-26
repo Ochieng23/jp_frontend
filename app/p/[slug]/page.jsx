@@ -194,7 +194,7 @@ export default function PublicPassportPage() {
       {/* Top bar */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-          <CaziniLogo markSize={22} wordmarkClassName="text-sm" />
+          <CaziniLogo markSize={28} wordmarkClassName="text-sm" />
           <span className="text-xs text-gray-400">Shared credential profile</span>
         </div>
       </div>

@@ -52,7 +52,7 @@ export default function LoginPage() {
       <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-blue-600 to-blue-900 flex-col items-center justify-center p-12 text-white">
         <div className="max-w-sm w-full">
           <div className="mb-10">
-            <CaziniLogo markSize={40} wordmarkClassName="text-2xl" variant="light" />
+            <CaziniLogo markSize={46} wordmarkClassName="text-2xl" variant="light" />
           </div>
           <h2 className="text-3xl font-bold mb-4 leading-tight">Your credentials travel with you</h2>
           <p className="text-blue-200 text-base mb-12 leading-relaxed">
@@ -77,7 +77,7 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-8">
-            <CaziniLogo markSize={30} wordmarkClassName="text-lg" />
+            <CaziniLogo markSize={38} wordmarkClassName="text-lg" />
           </div>
 
           <h1 className="text-2xl font-bold text-gray-900 mb-1">Welcome back</h1>
