@@ -152,7 +152,9 @@ export default function DashboardShell({ children }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <CaziniLogo markSize={28} wordmarkClassName="text-sm" />
+          <Link href="/passport" className="no-underline inline-block">
+            <CaziniLogo markSize={28} wordmarkClassName="text-sm" />
+          </Link>
         </div>
 
         <main className="flex-1 p-6">

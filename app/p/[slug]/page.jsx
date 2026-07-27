@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import QRCode from 'react-qr-code';
 import CaziniLogo from '../../../components/CaziniLogo';
 // @react-pdf/renderer is loaded dynamically inside the click handler to avoid
@@ -194,7 +195,9 @@ export default function PublicPassportPage() {
       {/* Top bar */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-          <CaziniLogo markSize={28} wordmarkClassName="text-sm" />
+          <Link href="/" className="no-underline inline-block">
+            <CaziniLogo markSize={28} wordmarkClassName="text-sm" />
+          </Link>
           <span className="text-xs text-gray-400">Shared credential profile</span>
         </div>
       </div>
