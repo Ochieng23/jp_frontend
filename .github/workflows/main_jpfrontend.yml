@@ -29,11 +29,24 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
+      - name: Assemble minimal standalone deploy package
+        # next.config.js sets output: 'standalone', and the Azure App Service
+        # startup command is `node server.js` — so the deployed artifact must
+        # be .next/standalone's contents (which already has its own server.js
+        # + pruned node_modules), not the whole repo. Deploying the full repo
+        # (~500MB incl. node_modules) made Kudu's zip-deploy sync unreliably
+        # stale on new/changed routes across several pushes; this keeps the
+        # artifact small (~10MB) and avoids that path entirely.
+        run: |
+          mkdir -p .next/standalone/.next/static
+          cp -r .next/static/. .next/standalone/.next/static/
+          cp -r public .next/standalone/public
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: .next/standalone
 
   deploy:
     runs-on: ubuntu-latest

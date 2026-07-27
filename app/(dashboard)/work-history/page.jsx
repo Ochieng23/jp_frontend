@@ -9,7 +9,7 @@ function formatDate(dateStr) {
   return new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'short' }).format(new Date(dateStr));
 }
 
-const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-400 text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-60';
+const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-400 text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-60';
 const labelClass = 'block text-sm font-medium text-gray-700 mb-1.5';
 
 function WorkEntryModal({ isOpen, onClose, onSuccess, entry }) {
@@ -134,7 +134,7 @@ function WorkEntryModal({ isOpen, onClose, onSuccess, entry }) {
                 name="is_current" type="checkbox"
                 checked={form.is_current} onChange={handleChange}
                 disabled={loading}
-                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
               <span className="text-sm font-medium text-gray-700">I currently work here</span>
             </label>
@@ -157,7 +157,7 @@ function WorkEntryModal({ isOpen, onClose, onSuccess, entry }) {
               </button>
               <button
                 type="submit" disabled={loading}
-                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-60 cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -245,7 +245,7 @@ export default function WorkHistoryPage() {
         </div>
         <button
           onClick={() => setAddOpen(true)}
-          className="flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors text-sm cursor-pointer"
+          className="flex items-center gap-2 bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors text-sm cursor-pointer"
         >
           + Add Entry
         </button>
@@ -254,7 +254,7 @@ export default function WorkHistoryPage() {
       {/* Loading */}
       {isLoading && (
         <div className="flex items-center justify-center py-16">
-          <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+          <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin" />
         </div>
       )}
 
@@ -273,7 +273,7 @@ export default function WorkHistoryPage() {
           <p className="text-sm text-gray-500 mb-6">Add your employment history to build your professional profile.</p>
           <button
             onClick={() => setAddOpen(true)}
-            className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors text-sm cursor-pointer"
+            className="inline-flex items-center gap-2 bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors text-sm cursor-pointer"
           >
             Add First Entry
           </button>
@@ -292,13 +292,13 @@ export default function WorkHistoryPage() {
               return (
                 <div key={id} className="relative">
                   {/* Timeline dot */}
-                  <div className="absolute -left-5 top-5 w-3 h-3 rounded-full bg-blue-600 border-2 border-white shadow" />
+                  <div className="absolute -left-5 top-5 w-3 h-3 rounded-full bg-primary-600 border-2 border-white shadow" />
 
                   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                     <div className="flex items-start justify-between flex-wrap gap-3 mb-2">
                       <div>
                         <h3 className="font-semibold text-gray-900 text-base">{entry.job_title}</h3>
-                        <p className="text-blue-600 font-medium text-sm mt-0.5">{entry.employer_name}</p>
+                        <p className="text-primary-600 font-medium text-sm mt-0.5">{entry.employer_name}</p>
                         <p className="text-xs text-gray-400 mt-1">
                           {entry.location && <span>{entry.location} · </span>}
                           {formatDate(entry.start_date)} —{' '}

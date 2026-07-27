@@ -64,7 +64,7 @@ export default function ShareLinkDialog({ isOpen, onClose, shareToken, error, lo
           {/* Loading */}
           {loading && (
             <div className="flex flex-col items-center py-8 gap-4">
-              <span className="inline-block w-8 h-8 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+              <span className="inline-block w-8 h-8 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin" />
               <p className="text-sm text-gray-500">Generating your share link…</p>
             </div>
           )}
@@ -108,7 +108,7 @@ export default function ShareLinkDialog({ isOpen, onClose, shareToken, error, lo
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-xl transition-colors cursor-pointer
                     ${copied
                       ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-primary-600 text-white hover:bg-primary-700'
                     }`}
                 >
                   {copied ? '✓ Copied!' : 'Copy Link'}
@@ -123,7 +123,7 @@ export default function ShareLinkDialog({ isOpen, onClose, shareToken, error, lo
 
               <p className="text-xs text-gray-400 text-center">
                 Manage and revoke share links from the{' '}
-                <a href="/share" className="text-blue-600 hover:text-blue-700 font-medium">Share Links page</a>.
+                <a href="/share" className="text-primary-600 hover:text-primary-700 font-medium">Share Links page</a>.
               </p>
             </div>
           )}

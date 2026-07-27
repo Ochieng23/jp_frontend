@@ -6,7 +6,7 @@ const STATUS_CONFIG = {
   recognised:     { cls: 'bg-green-100 text-green-700',  label: 'Recognised'    },
   partial:        { cls: 'bg-amber-100 text-amber-700',  label: 'Partial'       },
   not_recognised: { cls: 'bg-red-100 text-red-700',      label: 'Not Recog.'    },
-  pending:        { cls: 'bg-blue-100 text-blue-700',    label: 'Pending'       },
+  pending:        { cls: 'bg-primary-100 text-primary-700',    label: 'Pending'       },
 };
 
 function StatusCell({ status, notes }) {
@@ -91,7 +91,7 @@ export default function RecognitionMatrix({ matrix }) {
                 <td className="px-4 py-4 bg-white sticky left-0 z-10 border-r border-gray-100">
                   <div className="font-semibold text-gray-900 text-sm">{row.credential?.title || 'Untitled'}</div>
                   {row.credential?.type && (
-                    <div className="text-xs text-blue-600 font-medium capitalize mt-0.5">
+                    <div className="text-xs text-primary-600 font-medium capitalize mt-0.5">
                       {row.credential.type.replace(/_/g, ' ')}
                     </div>
                   )}

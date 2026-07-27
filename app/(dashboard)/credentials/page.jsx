@@ -14,7 +14,7 @@ const CREDENTIAL_TYPES = [
 const PAGE_SIZE = 12;
 
 const TYPE_COLORS = {
-  employment: 'bg-blue-100 text-blue-700',
+  employment: 'bg-primary-100 text-primary-700',
   education: 'bg-purple-100 text-purple-700',
   certification: 'bg-green-100 text-green-700',
   skill: 'bg-yellow-100 text-yellow-700',
@@ -23,7 +23,7 @@ const TYPE_COLORS = {
   identity: 'bg-gray-100 text-gray-700',
 };
 
-const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-400 text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-60';
+const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-400 text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-60';
 const labelClass = 'block text-sm font-medium text-gray-700 mb-1.5';
 
 function AddCredentialModal({ isOpen, onClose, onSuccess }) {
@@ -206,7 +206,7 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
               <label className={labelClass}>Supporting Document</label>
               <div
                 className={`relative border-2 border-dashed rounded-xl p-5 text-center transition-colors cursor-pointer ${
-                  dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-200 hover:border-gray-300 bg-gray-50'
+                  dragOver ? 'border-primary-400 bg-primary-50' : 'border-gray-200 hover:border-gray-300 bg-gray-50'
                 }`}
                 onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                 onDragLeave={() => setDragOver(false)}
@@ -253,7 +253,7 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
               </button>
               <button
                 type="submit" disabled={loading}
-                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-60 cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -296,7 +296,7 @@ export default function CredentialsPage() {
         </div>
         <button
           onClick={() => setAddOpen(true)}
-          className="flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors text-sm cursor-pointer"
+          className="flex items-center gap-2 bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors text-sm cursor-pointer"
         >
           + Add Credential
         </button>
@@ -307,7 +307,7 @@ export default function CredentialsPage() {
         <div>
           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Type</label>
           <select
-            className="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-36"
+            className="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 bg-white outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 w-36"
             value={filters.type}
             onChange={(e) => setFilter('type', e.target.value)}
           >
@@ -321,7 +321,7 @@ export default function CredentialsPage() {
         <div>
           <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Status</label>
           <select
-            className="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-36"
+            className="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 bg-white outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 w-36"
             value={filters.status}
             onChange={(e) => setFilter('status', e.target.value)}
           >
@@ -353,7 +353,7 @@ export default function CredentialsPage() {
       {/* Loading */}
       {isLoading && (
         <div className="flex items-center justify-center py-16">
-          <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+          <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin" />
         </div>
       )}
 
@@ -375,7 +375,7 @@ export default function CredentialsPage() {
           {!hasFilters && (
             <button
               onClick={() => setAddOpen(true)}
-              className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors text-sm cursor-pointer"
+              className="inline-flex items-center gap-2 bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors text-sm cursor-pointer"
             >
               Add Credential
             </button>

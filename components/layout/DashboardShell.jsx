@@ -72,7 +72,7 @@ export default function DashboardShell({ children }) {
                 href={link.href}
                 className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors no-underline mx-2 rounded-lg mb-0.5 ${
                   active
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-primary-600 text-white'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
@@ -92,7 +92,7 @@ export default function DashboardShell({ children }) {
                 href="/admin/dashboard"
                 className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors no-underline mx-2 rounded-lg mb-0.5 ${
                   pathname.startsWith('/admin')
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-primary-600 text-white'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
@@ -106,8 +106,8 @@ export default function DashboardShell({ children }) {
         {/* Footer / user */}
         <div className="border-t border-gray-100 p-4 flex-shrink-0">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <span className="text-blue-700 font-bold text-sm">
+            <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+              <span className="text-primary-700 font-bold text-sm">
                 {user?.full_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || '?'}
               </span>
             </div>

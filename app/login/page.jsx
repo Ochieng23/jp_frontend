@@ -49,13 +49,13 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left panel */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-blue-600 to-blue-900 flex-col items-center justify-center p-12 text-white">
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-primary-600 to-primary-900 flex-col items-center justify-center p-12 text-white">
         <div className="max-w-sm w-full">
           <div className="mb-10">
             <CaziniLogo markSize={46} wordmarkClassName="text-2xl" variant="light" />
           </div>
           <h2 className="text-3xl font-bold mb-4 leading-tight">Your credentials travel with you</h2>
-          <p className="text-blue-200 text-base mb-12 leading-relaxed">
+          <p className="text-primary-200 text-base mb-12 leading-relaxed">
             A portable digital credential wallet for refugees and mobile workers crossing borders.
           </p>
           <div className="space-y-4">
@@ -66,7 +66,7 @@ export default function LoginPage() {
             ].map((stat) => (
               <div key={stat.label} className="flex items-center gap-4 bg-white/10 rounded-xl px-5 py-4">
                 <span className="text-2xl font-extrabold">{stat.value}</span>
-                <span className="text-blue-50 text-sm">{stat.label}</span>
+                <span className="text-primary-50 text-sm">{stat.label}</span>
               </div>
             ))}
           </div>
@@ -98,8 +98,8 @@ export default function LoginPage() {
                 id="email" name="email" type="email" autoComplete="email"
                 value={form.email} onChange={handleChange}
                 placeholder="you@example.com" disabled={loading}
-                className={`w-full px-3 py-2.5 rounded-lg border text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-60 ${
-                  errors.email ? 'border-red-400 focus:border-red-500' : 'border-gray-400 focus:border-blue-500'
+                className={`w-full px-3 py-2.5 rounded-lg border text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-60 ${
+                  errors.email ? 'border-red-400 focus:border-red-500' : 'border-gray-400 focus:border-primary-500'
                 }`}
               />
               {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
@@ -114,8 +114,8 @@ export default function LoginPage() {
                   id="password" name="password" type={showPassword ? 'text' : 'password'} autoComplete="current-password"
                   value={form.password} onChange={handleChange}
                   placeholder="Enter your password" disabled={loading}
-                  className={`w-full px-3 py-2.5 pr-10 rounded-lg border text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-60 ${
-                    errors.password ? 'border-red-400 focus:border-red-500' : 'border-gray-400 focus:border-blue-500'
+                  className={`w-full px-3 py-2.5 pr-10 rounded-lg border text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-60 ${
+                    errors.password ? 'border-red-400 focus:border-red-500' : 'border-gray-400 focus:border-primary-500'
                   }`}
                 />
                 <button
@@ -141,7 +141,7 @@ export default function LoginPage() {
 
             <button
               type="submit" disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+              className="w-full flex items-center justify-center gap-2 bg-primary-600 text-white font-semibold py-3 rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-2"
             >
               {loading ? (
                 <>
@@ -154,7 +154,7 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             Don&apos;t have an account?{' '}
-            <Link href="/register" className="font-medium text-blue-600 hover:text-blue-700">
+            <Link href="/register" className="font-medium text-primary-600 hover:text-primary-700">
               Create one
             </Link>
           </p>

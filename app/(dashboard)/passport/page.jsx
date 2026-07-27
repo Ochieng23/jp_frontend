@@ -82,7 +82,7 @@ export default function PassportPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+        <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin" />
       </div>
     );
   }
@@ -145,14 +145,14 @@ export default function PassportPage() {
         </div>
         <button
           onClick={handleShare}
-          className="flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors text-sm cursor-pointer"
+          className="flex items-center gap-2 bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors text-sm cursor-pointer"
         >
           🔗 Share Passport
         </button>
       </div>
 
       {/* Passport card */}
-      <div className="relative bg-gradient-to-br from-blue-600 to-indigo-800 rounded-3xl p-8 text-white overflow-hidden shadow-xl shadow-blue-200">
+      <div className="relative bg-gradient-to-br from-primary-600 to-primary-900 rounded-3xl p-8 text-white overflow-hidden shadow-xl shadow-primary-200">
         {/* Decorative circles */}
         <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/5 rounded-full" />
         <div className="absolute -bottom-8 -left-8 w-36 h-36 bg-white/5 rounded-full" />
@@ -206,9 +206,9 @@ export default function PassportPage() {
               )}
             </button>
             <div className="min-w-0 flex-1">
-              <p className="text-blue-200 text-xs font-semibold uppercase tracking-wider mb-1">Cazini</p>
+              <p className="text-primary-200 text-xs font-semibold uppercase tracking-wider mb-1">Cazini</p>
               <h2 className="text-2xl font-bold break-words">{user?.full_name || '—'}</h2>
-              <p className="text-blue-200 text-sm mt-1">{user?.nationality || '—'}</p>
+              <p className="text-primary-200 text-sm mt-1">{user?.nationality || '—'}</p>
             </div>
           </div>
 
@@ -224,18 +224,18 @@ export default function PassportPage() {
         <div className="relative mt-8 pt-6 border-t border-white/20 grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
           {user?.unhcr_id && (
             <div>
-              <p className="text-blue-300 text-xs uppercase tracking-wide">UNHCR ID</p>
+              <p className="text-primary-300 text-xs uppercase tracking-wide">UNHCR ID</p>
               <p className="font-semibold mt-0.5">{user.unhcr_id}</p>
             </div>
           )}
           {user?.email && (
             <div>
-              <p className="text-blue-300 text-xs uppercase tracking-wide">Email</p>
+              <p className="text-primary-300 text-xs uppercase tracking-wide">Email</p>
               <p className="font-semibold mt-0.5 truncate">{user.email}</p>
             </div>
           )}
           <div>
-            <p className="text-blue-300 text-xs uppercase tracking-wide">Member since</p>
+            <p className="text-primary-300 text-xs uppercase tracking-wide">Member since</p>
             <p className="font-semibold mt-0.5">{joinedDate}</p>
           </div>
         </div>
@@ -249,7 +249,7 @@ export default function PassportPage() {
 
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Active Credentials"       value={activeCredentials.length}        icon="📜" color="bg-blue-50"   valueColor="text-blue-600"  />
+        <StatCard label="Active Credentials"       value={activeCredentials.length}        icon="📜" color="bg-primary-50"   valueColor="text-primary-600"  />
         <StatCard label="Recognised Jurisdictions" value={recognisedJurisdictions.size}    icon="🌍" color="bg-green-50"  valueColor="text-green-600" />
         <StatCard label="Credential Types"         value={Object.keys(credByType).length}  icon="🗂️" color="bg-violet-50" valueColor="text-violet-600" />
         <StatCard label="Total Credentials"        value={credentials.length}              icon="🎓" color="bg-amber-50"  valueColor="text-amber-600" />

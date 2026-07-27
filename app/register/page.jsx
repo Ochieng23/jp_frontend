@@ -27,8 +27,8 @@ const NATIONALITIES = [
 ];
 
 const inputClass = (hasError) =>
-  `w-full px-3 py-2.5 rounded-lg border text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-60 ${
-    hasError ? 'border-red-500 focus:border-red-600' : 'border-gray-400 focus:border-blue-500'
+  `w-full px-3 py-2.5 rounded-lg border text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-60 ${
+    hasError ? 'border-red-500 focus:border-red-600' : 'border-gray-400 focus:border-primary-500'
   }`;
 
 export default function RegisterPage() {
@@ -99,18 +99,18 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left panel */}
-      <div className="hidden lg:flex w-2/5 bg-gradient-to-br from-blue-600 to-blue-900 flex-col items-center justify-center p-12 text-white">
+      <div className="hidden lg:flex w-2/5 bg-gradient-to-br from-primary-600 to-primary-900 flex-col items-center justify-center p-12 text-white">
         <div className="max-w-xs w-full">
           <div className="mb-10">
             <CaziniLogo markSize={46} wordmarkClassName="text-2xl" variant="light" />
           </div>
           <h2 className="text-2xl font-bold mb-4 leading-tight">Start your journey today</h2>
-          <p className="text-blue-50 text-sm leading-relaxed mb-8">
+          <p className="text-primary-50 text-sm leading-relaxed mb-8">
             Create your portable credential passport in minutes. Free to use, works anywhere.
           </p>
           <ul className="space-y-3">
             {['Free digital credential wallet','UNHCR ID supported','Works across 30+ countries','Cryptographically secure'].map((item) => (
-              <li key={item} className="flex items-center gap-3 text-sm text-blue-50">
+              <li key={item} className="flex items-center gap-3 text-sm text-primary-50">
                 <span className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 text-xs">✓</span>
                 {item}
               </li>
@@ -285,7 +285,7 @@ export default function RegisterPage() {
 
             <button
               type="submit" disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-primary-600 text-white font-semibold py-3 rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
@@ -298,7 +298,7 @@ export default function RegisterPage() {
 
           <p className="mt-6 text-center text-sm text-gray-500">
             Already have an account?{' '}
-            <Link href="/login" className="font-medium text-blue-600 hover:text-blue-700">Sign in</Link>
+            <Link href="/login" className="font-medium text-primary-600 hover:text-primary-700">Sign in</Link>
           </p>
         </div>
       </div>

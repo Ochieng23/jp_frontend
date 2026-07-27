@@ -9,7 +9,7 @@ function fmtDate(d) {
 }
 
 const STATUS_COLORS = {
-  Applied: 'bg-blue-50 text-blue-700',
+  Applied: 'bg-primary-50 text-primary-700',
   Assessment: 'bg-amber-50 text-amber-700',
   Interview: 'bg-purple-50 text-purple-700',
   BackgroundCheck: 'bg-amber-50 text-amber-700',
@@ -30,7 +30,7 @@ export default function MyApplicationsPage() {
         </div>
         <Link
           href="/jobs"
-          className="text-sm font-medium text-blue-600 hover:text-blue-700 no-underline"
+          className="text-sm font-medium text-primary-600 hover:text-primary-700 no-underline"
         >
           ← Back to Job Board
         </Link>
@@ -38,7 +38,7 @@ export default function MyApplicationsPage() {
 
       {isLoading && (
         <div className="flex items-center justify-center py-16">
-          <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+          <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin" />
         </div>
       )}
 
@@ -55,7 +55,7 @@ export default function MyApplicationsPage() {
           <p className="text-sm text-gray-500 mb-6">Browse the job board and apply to your first position.</p>
           <Link
             href="/jobs"
-            className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors text-sm no-underline"
+            className="inline-flex items-center gap-2 bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors text-sm no-underline"
           >
             Browse Jobs
           </Link>

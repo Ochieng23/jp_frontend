@@ -41,8 +41,8 @@ function Field({ label, hint, required, error, children }) {
 
 const inputCls = (err) =>
   `w-full px-3 py-2.5 rounded-lg border text-sm outline-none transition-colors bg-white text-gray-900
-   placeholder-gray-400 focus:ring-2 focus:ring-blue-500/20 disabled:opacity-50 disabled:bg-gray-50
-   ${err ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'}`;
+   placeholder-gray-400 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50 disabled:bg-gray-50
+   ${err ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-primary-500'}`;
 
 export default function SettingsPage() {
   const { user, isLoading, mutate } = useUser();
@@ -188,7 +188,7 @@ export default function SettingsPage() {
   if (isLoading || !form) {
     return (
       <div className="flex items-center justify-center py-24">
-        <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+        <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin" />
       </div>
     );
   }
@@ -218,7 +218,7 @@ export default function SettingsPage() {
                     onError={() => setAvatarPreview(null)}
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-2xl font-bold">
+                  <div className="w-full h-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-2xl font-bold">
                     {initials}
                   </div>
                 )}

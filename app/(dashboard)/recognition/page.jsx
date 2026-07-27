@@ -10,7 +10,7 @@ const LEGEND = [
   { cls: 'bg-green-100 text-green-700', label: 'Recognised'    },
   { cls: 'bg-amber-100 text-amber-700', label: 'Partial'       },
   { cls: 'bg-red-100 text-red-700',     label: 'Not Recognised' },
-  { cls: 'bg-blue-100 text-blue-700',   label: 'Pending'       },
+  { cls: 'bg-primary-100 text-primary-700',   label: 'Pending'       },
 ];
 
 function EvaluateModal({ isOpen, onClose, holderId }) {
@@ -104,7 +104,7 @@ function EvaluateModal({ isOpen, onClose, holderId }) {
                 </button>
                 <button
                   type="submit" disabled={loading}
-                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 cursor-pointer"
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-60 cursor-pointer"
                 >
                   {loading ? (
                     <>
@@ -126,7 +126,7 @@ function EvaluateModal({ isOpen, onClose, holderId }) {
                 <>
                   {(jobStatus.status === 'queued' || jobStatus.status === 'processing') && (
                     <div className="flex items-center gap-3 text-sm text-gray-700">
-                      <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin flex-shrink-0" />
+                      <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-primary-600 rounded-full animate-spin flex-shrink-0" />
                       Status: <strong>{jobStatus.status === 'queued' ? 'Queued' : 'Processing…'}</strong>
                     </div>
                   )}
@@ -168,7 +168,7 @@ export default function RecognitionPage() {
   if (userLoading || isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+        <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin" />
       </div>
     );
   }
@@ -200,7 +200,7 @@ export default function RecognitionPage() {
           </button>
           <button
             onClick={() => setEvalOpen(true)}
-            className="flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors text-sm cursor-pointer"
+            className="flex items-center gap-2 bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors text-sm cursor-pointer"
           >
             Trigger Evaluation
           </button>
@@ -228,7 +228,7 @@ export default function RecognitionPage() {
           </p>
           <button
             onClick={() => setEvalOpen(true)}
-            className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors text-sm cursor-pointer"
+            className="inline-flex items-center gap-2 bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors text-sm cursor-pointer"
           >
             Trigger First Evaluation
           </button>

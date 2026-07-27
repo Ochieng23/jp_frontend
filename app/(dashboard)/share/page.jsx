@@ -214,7 +214,7 @@ export default function SharePage() {
               Link expiry
             </label>
             <select
-              className="px-3 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-900 bg-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 w-40"
+              className="px-3 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-900 bg-white outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 w-40"
               value={expiry}
               onChange={(e) => setExpiry(e.target.value)}
               disabled={generating}
@@ -230,7 +230,7 @@ export default function SharePage() {
           <button
             onClick={handleGenerate}
             disabled={generating}
-            className="flex items-center gap-2 bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60 text-sm cursor-pointer"
+            className="flex items-center gap-2 bg-primary-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-60 text-sm cursor-pointer"
           >
             {generating ? (
               <>
@@ -262,7 +262,7 @@ export default function SharePage() {
 
         {loading && (
           <div className="flex items-center justify-center py-10">
-            <span className="inline-block w-8 h-8 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+            <span className="inline-block w-8 h-8 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin" />
           </div>
         )}
 

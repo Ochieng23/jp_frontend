@@ -203,7 +203,7 @@ export default function PublicPassportPage() {
         {/* Loading */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin" />
+            <span className="inline-block w-10 h-10 border-4 border-gray-200 border-t-primary-600 rounded-full animate-spin" />
             <p className="text-sm text-gray-500">Loading passport…</p>
           </div>
         )}
@@ -228,7 +228,7 @@ export default function PublicPassportPage() {
         {!loading && !expired && !errorMsg && data && (
           <>
             {/* Profile hero card */}
-            <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-3xl p-8 text-white shadow-xl shadow-blue-200 relative overflow-hidden">
+            <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 rounded-3xl p-8 text-white shadow-xl shadow-primary-200 relative overflow-hidden">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full" />
               <div className="absolute -bottom-6 -left-6 w-28 h-28 bg-white/5 rounded-full" />
 
@@ -246,11 +246,11 @@ export default function PublicPassportPage() {
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-blue-200 text-xs font-semibold uppercase tracking-wider mb-1">Verified Passport</p>
+                  <p className="text-primary-200 text-xs font-semibold uppercase tracking-wider mb-1">Verified Passport</p>
                   <h1 className="text-2xl font-bold truncate">{holder?.full_name}</h1>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-lg">{flag}</span>
-                    <span className="text-blue-200 text-sm">{holder?.nationality || '—'}</span>
+                    <span className="text-primary-200 text-sm">{holder?.nationality || '—'}</span>
                   </div>
                 </div>
 
@@ -274,24 +274,24 @@ export default function PublicPassportPage() {
               {/* Bio */}
               {holder?.bio && (
                 <div className="relative mt-5 pt-5 border-t border-white/20">
-                  <p className="text-blue-50 text-sm leading-relaxed">{holder.bio}</p>
+                  <p className="text-primary-50 text-sm leading-relaxed">{holder.bio}</p>
                 </div>
               )}
 
               {/* Stats strip */}
               <div className="relative mt-4 pt-4 border-t border-white/20 flex gap-5 text-sm">
                 <div>
-                  <p className="text-blue-300 text-xs uppercase tracking-wide">Credentials</p>
+                  <p className="text-primary-300 text-xs uppercase tracking-wide">Credentials</p>
                   <p className="font-bold text-base mt-0.5">{credentials.length}</p>
                 </div>
                 {workExperiences.length > 0 && (
                   <div>
-                    <p className="text-blue-300 text-xs uppercase tracking-wide">Experience</p>
+                    <p className="text-primary-300 text-xs uppercase tracking-wide">Experience</p>
                     <p className="font-bold text-base mt-0.5">{workExperiences.length}</p>
                   </div>
                 )}
                 <div>
-                  <p className="text-blue-300 text-xs uppercase tracking-wide">Verified</p>
+                  <p className="text-primary-300 text-xs uppercase tracking-wide">Verified</p>
                   <p className="font-bold text-base mt-0.5">{verifiedCreds.length + verifiedWork.length}</p>
                 </div>
               </div>
