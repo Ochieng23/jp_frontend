@@ -6,26 +6,6 @@ import Link from 'next/link';
 import useAuthStore from '../../lib/store/authStore';
 import CaziniLogo from '../../components/CaziniLogo';
 
-const NATIONALITIES = [
-  'Afghan','Albanian','Algerian','American','Argentine','Armenian','Australian',
-  'Austrian','Azerbaijani','Bahraini','Bangladeshi','Belarusian','Belgian',
-  'Bolivian','Bosnian','Brazilian','British','Bulgarian','Burundian','Cambodian',
-  'Cameroonian','Canadian','Chilean','Chinese','Colombian','Congolese','Croatian',
-  'Cuban','Czech','Danish','Dutch','Ecuadorian','Egyptian','Eritrean','Estonian',
-  'Ethiopian','Filipino','Finnish','French','Georgian','German','Ghanaian','Greek',
-  'Guatemalan','Guinean','Haitian','Honduran','Hungarian','Indian','Indonesian',
-  'Iranian','Iraqi','Irish','Israeli','Italian','Ivorian','Jamaican','Japanese',
-  'Jordanian','Kazakhstani','Kenyan','Korean','Kurdish','Kuwaiti','Lebanese',
-  'Libyan','Lithuanian','Malawian','Malaysian','Malian','Mauritanian','Mexican',
-  'Moldovan','Moroccan','Mozambican','Myanmar','Namibian','Nepalese','Nigerian',
-  'Norwegian','Pakistani','Palestinian','Panamanian','Peruvian','Polish','Portuguese',
-  'Romanian','Russian','Rwandan','Saudi','Senegalese','Serbian','Sierra Leonean',
-  'Somali','South African','South Sudanese','Spanish','Sri Lankan','Stateless',
-  'Sudanese','Swedish','Swiss','Syrian','Tanzanian','Thai','Togolese','Tunisian',
-  'Turkish','Ugandan','Ukrainian','Undetermined','Uruguayan','Uzbekistani',
-  'Venezuelan','Vietnamese','Yemeni','Zambian','Zimbabwean','Other',
-];
-
 const inputClass = (hasError) =>
   `w-full px-3 py-2.5 rounded-lg border text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-60 ${
     hasError ? 'border-red-500 focus:border-red-600' : 'border-gray-400 focus:border-primary-500'
@@ -36,8 +16,7 @@ export default function RegisterPage() {
   const register = useAuthStore((s) => s.register);
 
   const [form, setForm] = useState({
-    full_name: '', date_of_birth: '', nationality: '',
-    email: '', password: '', confirmPassword: '', phone: '', unhcr_id: '',
+    full_name: '', email: '', password: '', confirmPassword: '', phone: '',
   });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
@@ -54,12 +33,6 @@ export default function RegisterPage() {
   function validate() {
     const errs = {};
     if (!form.full_name.trim()) errs.full_name = 'Full name is required';
-    if (!form.date_of_birth) errs.date_of_birth = 'Date of birth is required';
-    else {
-      const age = (Date.now() - new Date(form.date_of_birth + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24 * 365);
-      if (age < 13) errs.date_of_birth = 'Must be at least 13 years old';
-    }
-    if (!form.nationality) errs.nationality = 'Nationality is required';
     if (!form.email.trim()) errs.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Enter a valid email';
     if (!form.password) errs.password = 'Password is required';
@@ -79,16 +52,13 @@ export default function RegisterPage() {
     try {
       const payload = {
         full_name: form.full_name.trim(),
-        date_of_birth: form.date_of_birth,
-        nationality: form.nationality,
         email: form.email.trim().toLowerCase(),
         password: form.password,
       };
-      if (form.phone.trim())    payload.phone    = form.phone.trim();
-      if (form.unhcr_id.trim()) payload.unhcr_id = form.unhcr_id.trim();
+      if (form.phone.trim()) payload.phone = form.phone.trim();
 
       await register(payload);
-      router.push('/passport');
+      router.push('/passport?welcome=1');
     } catch (err) {
       setServerError(err.message || 'Unable to connect. Please try again.');
     } finally {
@@ -111,7 +81,7 @@ export default function RegisterPage() {
             Create your portable credential passport in minutes. Free to use, works anywhere.
           </p>
           <ul className="space-y-3">
-            {['Free digital credential wallet','UNHCR ID supported','Works across 30+ countries','Cryptographically secure'].map((item) => (
+            {['Free digital credential wallet','Works across 30+ countries','Cryptographically secure','Apply to jobs in minutes'].map((item) => (
               <li key={item} className="flex items-center gap-3 text-sm text-primary-50">
                 <span className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 text-xs">✓</span>
                 {item}
@@ -131,7 +101,7 @@ export default function RegisterPage() {
           </div>
 
           <h1 className="text-2xl font-bold text-gray-900 mb-1">Create your passport</h1>
-          <p className="text-gray-500 text-sm mb-8">Register to get your portable employment credential identity</p>
+          <p className="text-gray-500 text-sm mb-8">Name, email and password is all it takes — you can fill in the rest of your profile any time.</p>
 
           {serverError && (
             <div className="mb-6 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
@@ -151,35 +121,6 @@ export default function RegisterPage() {
                 className={inputClass(errors.full_name)}
               />
               {errors.full_name && <p className="mt-1 text-xs text-red-600">{errors.full_name}</p>}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="date_of_birth">
-                  Date of birth <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="date_of_birth" name="date_of_birth" type="date"
-                  value={form.date_of_birth} onChange={handleChange}
-                  disabled={loading} max={new Date().toISOString().split('T')[0]}
-                  className={inputClass(errors.date_of_birth)}
-                />
-                {errors.date_of_birth && <p className="mt-1 text-xs text-red-600">{errors.date_of_birth}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="nationality">
-                  Nationality <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="nationality" name="nationality"
-                  value={form.nationality} onChange={handleChange} disabled={loading}
-                  className={inputClass(errors.nationality)}
-                >
-                  <option value="">Select…</option>
-                  {NATIONALITIES.map((n) => <option key={n} value={n}>{n}</option>)}
-                </select>
-                {errors.nationality && <p className="mt-1 text-xs text-red-600">{errors.nationality}</p>}
-              </div>
             </div>
 
             <div>
@@ -260,31 +201,17 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="phone">
-                  Phone <span className="text-gray-500 font-normal">(optional)</span>
-                </label>
-                <input
-                  id="phone" name="phone" type="tel" autoComplete="tel"
-                  value={form.phone} onChange={handleChange}
-                  placeholder="+1 234 567 8901" disabled={loading}
-                  className={inputClass(errors.phone)}
-                />
-                {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="unhcr_id">
-                  UNHCR ID <span className="text-gray-500 font-normal">(optional)</span>
-                </label>
-                <input
-                  id="unhcr_id" name="unhcr_id" type="text"
-                  value={form.unhcr_id} onChange={handleChange}
-                  placeholder="e.g. SYR-2024-001234" disabled={loading}
-                  className={inputClass(false)}
-                />
-                <p className="mt-1 text-xs text-gray-500">UNHCR registration number if applicable</p>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="phone">
+                Phone <span className="text-gray-500 font-normal">(optional — needed later to apply for jobs)</span>
+              </label>
+              <input
+                id="phone" name="phone" type="tel" autoComplete="tel"
+                value={form.phone} onChange={handleChange}
+                placeholder="+1 234 567 8901" disabled={loading}
+                className={inputClass(errors.phone)}
+              />
+              {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
             </div>
 
             <button

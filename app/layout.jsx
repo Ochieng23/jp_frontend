@@ -17,9 +17,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: 'Cazini — Portable Employment Credentials',
+  title: 'Cazini - Portable Employment Credentials',
   description:
-    'A portable cross-jurisdiction employment credential system for refugees and mobile workers.',
+    'A portable cross-jurisdiction employment credential system for jobseekers.',
   icons: {
     icon: '/WhatsApp_Image_2025-05-23_at_15.08.32_hxckfh-Sharpened.jpg',
   },

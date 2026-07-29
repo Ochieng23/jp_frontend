@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useCredentials } from '../../../lib/hooks';
+import { useCredentials, useOrganizations } from '../../../lib/hooks';
 import CredentialBadge from '../../../components/CredentialBadge';
 import JurisdictionSelector from '../../../components/JurisdictionSelector';
 import Pagination from '../../../components/Pagination';
@@ -27,6 +27,7 @@ const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-400 text-sm
 const labelClass = 'block text-sm font-medium text-gray-700 mb-1.5';
 
 function AddCredentialModal({ isOpen, onClose, onSuccess }) {
+  const { organizations, isLoading: orgsLoading } = useOrganizations();
   const [form, setForm] = useState({
     title: '', type: 'employment', issuer_id: '', jurisdiction_id: '',
     issued_at: '', expires_at: '', description: '', metadata: '',
@@ -62,6 +63,7 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
     e.preventDefault();
     setError('');
     if (!form.title.trim()) { setError('Title is required'); return; }
+    if (!form.issuer_id) { setError('Please select who issued this credential'); return; }
     if (!form.issued_at) { setError('Issue date is required'); return; }
 
     setLoading(true);
@@ -80,9 +82,9 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
       const payload = {
         title: form.title.trim(),
         type: form.type,
+        issuer_id: form.issuer_id,
         issued_at: form.issued_at,
       };
-      if (form.issuer_id.trim()) payload.issuer_id = form.issuer_id.trim();
       if (form.jurisdiction_id) payload.jurisdiction_id = form.jurisdiction_id;
       if (form.expires_at) payload.expires_at = form.expires_at;
       if (form.description.trim()) payload.description = form.description.trim();
@@ -155,11 +157,19 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
 
             {/* Issuer */}
             <div>
-              <label className={labelClass}>Issuer ID (Organisation)</label>
-              <input
+              <label className={labelClass}>Issued by <span className="text-red-500">*</span></label>
+              <select
                 name="issuer_id" className={inputClass} value={form.issuer_id}
-                onChange={handleChange} placeholder="Organisation ID" disabled={loading}
-              />
+                onChange={handleChange} disabled={loading || orgsLoading}
+              >
+                <option value="">{orgsLoading ? 'Loading organisations…' : 'Select an organisation…'}</option>
+                {organizations.map((org) => (
+                  <option key={org._id || org.id} value={org._id || org.id}>{org.name}</option>
+                ))}
+              </select>
+              {!orgsLoading && organizations.length === 0 && (
+                <p className="mt-1 text-xs text-gray-500">No organisations are registered yet — check back once your issuer has joined Cazini.</p>
+              )}
             </div>
 
             {/* Dates */}

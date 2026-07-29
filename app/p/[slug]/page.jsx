@@ -323,6 +323,19 @@ export default function PublicPassportPage() {
               </section>
             )}
 
+            {/* Introduction video */}
+            {holder?.intro_video_url && (
+              <section>
+                <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-3">Introduction</h2>
+                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                <video
+                  src={holder.intro_video_url}
+                  controls
+                  className="w-full rounded-xl border border-gray-200 bg-black"
+                />
+              </section>
+            )}
+
             {/* Work Experience */}
             {workExperiences.length > 0 && (
               <section>

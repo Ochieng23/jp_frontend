@@ -59,6 +59,11 @@ export default function SettingsPage() {
   const [avatarError, setAvatarError] = useState('');
   const fileInputRef = useRef(null);
 
+  const [videoPreview, setVideoPreview] = useState(null);
+  const [videoUploading, setVideoUploading] = useState(false);
+  const [videoError, setVideoError] = useState('');
+  const videoInputRef = useRef(null);
+
   // Populate form once user data loads
   useEffect(() => {
     if (user && !form) {
@@ -71,7 +76,6 @@ export default function SettingsPage() {
         nationality: user.nationality || '',
         date_of_birth: dob,
         phone: user.phone || '',
-        unhcr_id: user.unhcr_id || '',
       });
     }
   }, [user, form]);
@@ -86,7 +90,6 @@ export default function SettingsPage() {
   function validate() {
     const errs = {};
     if (!form.full_name.trim()) errs.full_name = 'Full name is required';
-    if (!form.nationality) errs.nationality = 'Nationality is required';
     if (form.date_of_birth) {
       const age = (Date.now() - new Date(form.date_of_birth + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24 * 365);
       if (age < 13) errs.date_of_birth = 'Must be at least 13 years old';
@@ -109,11 +112,10 @@ export default function SettingsPage() {
     try {
       const payload = {
         full_name: form.full_name.trim(),
-        nationality: form.nationality,
         bio: form.bio.trim(),
         phone: form.phone.trim() || null,
-        unhcr_id: form.unhcr_id.trim() || null,
       };
+      if (form.nationality) payload.nationality = form.nationality;
       if (form.date_of_birth) payload.date_of_birth = form.date_of_birth;
 
       const result = await patch('/passport/me', payload);
@@ -179,6 +181,61 @@ export default function SettingsPage() {
       setAvatarUploading(false);
     }
   }
+
+  const VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
+
+  async function handleVideoChange(e) {
+    const file = e.target.files?.[0];
+    videoInputRef.current.value = '';
+    if (!file) return;
+
+    if (!VIDEO_TYPES.includes(file.type)) {
+      setVideoError('Please select an MP4, WEBM, or MOV video file.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setVideoError('Video must be under 10 MB.');
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setVideoPreview(objectUrl);
+    setVideoError('');
+    setVideoUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const uploadRes = await uploadFile('/uploads/video', formData);
+      if (!uploadRes?.url) throw new Error('Video upload failed. File storage may not be configured on this server.');
+
+      const result = await patch('/passport/me', { intro_video_url: uploadRes.url });
+      mutate({ data: result.data }, false);
+      setUser(result.data);
+    } catch (err) {
+      setVideoPreview(null);
+      setVideoError(err.message || 'Upload failed. Please try again.');
+    } finally {
+      setVideoUploading(false);
+    }
+  }
+
+  async function handleRemoveVideo() {
+    setVideoError('');
+    setVideoUploading(true);
+    try {
+      const result = await patch('/passport/me', { intro_video_url: null });
+      mutate({ data: result.data }, false);
+      setUser(result.data);
+      setVideoPreview(null);
+    } catch (err) {
+      setVideoError(err.message || 'Failed to remove video. Please try again.');
+    } finally {
+      setVideoUploading(false);
+    }
+  }
+
+  const videoSrc = videoPreview || user?.intro_video_url || null;
 
   const avatarSrc = avatarPreview || user?.avatar_key || null;
   const initials = user?.full_name
@@ -253,6 +310,63 @@ export default function SettingsPage() {
           </div>
         </section>
 
+        {/* ── Introduction video ───────────────────────────── */}
+        <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <h2 className="text-base font-semibold text-gray-900 mb-1">Introduction video</h2>
+          <p className="text-sm text-gray-500 mb-4">A short video explaining your craft — helps employers get to know you before they read a single credential.</p>
+
+          {videoSrc ? (
+            <div className="space-y-3">
+              <div className="relative">
+                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                <video
+                  src={videoSrc}
+                  controls
+                  className="w-full max-w-sm rounded-xl border border-gray-200 bg-black"
+                />
+                {videoUploading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl max-w-sm">
+                    <span className="inline-block w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <input ref={videoInputRef} type="file" accept="video/mp4,video/webm,video/quicktime" className="hidden" onChange={handleVideoChange} />
+                <button
+                  type="button"
+                  onClick={() => videoInputRef.current?.click()}
+                  disabled={videoUploading}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  Replace video
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRemoveVideo}
+                  disabled={videoUploading}
+                  className="px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <input ref={videoInputRef} type="file" accept="video/mp4,video/webm,video/quicktime" className="hidden" onChange={handleVideoChange} />
+              <button
+                type="button"
+                onClick={() => videoInputRef.current?.click()}
+                disabled={videoUploading}
+                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                {videoUploading ? 'Uploading…' : 'Upload video'}
+              </button>
+              <p className="text-xs text-gray-400 mt-1.5">MP4, WEBM, or MOV — max 10 MB</p>
+            </div>
+          )}
+          {videoError && <p className="text-xs text-red-600 mt-2">{videoError}</p>}
+        </section>
+
         {/* ── Personal information ───────────────────────────── */}
         <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
           <h2 className="text-base font-semibold text-gray-900">Personal information</h2>
@@ -286,7 +400,7 @@ export default function SettingsPage() {
           </Field>
 
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Nationality" required error={errors.nationality}>
+            <Field label="Nationality" hint="(optional)" error={errors.nationality}>
               <select
                 name="nationality"
                 value={form.nationality}
@@ -319,32 +433,18 @@ export default function SettingsPage() {
         <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
           <h2 className="text-base font-semibold text-gray-900">Contact &amp; identity</h2>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Phone" hint="(optional)" error={errors.phone}>
-              <input
-                name="phone"
-                type="tel"
-                autoComplete="tel"
-                value={form.phone}
-                onChange={handleChange}
-                placeholder="+1 234 567 8901"
-                disabled={saving}
-                className={inputCls(errors.phone)}
-              />
-            </Field>
-
-            <Field label="UNHCR ID" hint="(optional)" error={errors.unhcr_id}>
-              <input
-                name="unhcr_id"
-                type="text"
-                value={form.unhcr_id}
-                onChange={handleChange}
-                placeholder="e.g. SYR-2024-001234"
-                disabled={saving}
-                className={inputCls(errors.unhcr_id)}
-              />
-            </Field>
-          </div>
+          <Field label="Phone" hint="(optional)" error={errors.phone}>
+            <input
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              value={form.phone}
+              onChange={handleChange}
+              placeholder="+1 234 567 8901"
+              disabled={saving}
+              className={inputCls(errors.phone)}
+            />
+          </Field>
 
           <Field label="Email address" hint="(cannot be changed)">
             <input

@@ -18,9 +18,9 @@ function fmtSalary(job) {
 }
 
 // Maps a kazini_backend requiredDocuments fieldName to the flat field this
-// app collects a URL for. Documents outside this set (other than the résumé,
-// handled separately) require a file upload kazini_backend doesn't expose a
-// generic endpoint for, so mandatory ones block applying via this job board.
+// app collects a URL for. Everything else (other than the résumé, handled
+// separately) is collected as a real file upload via POST /uploads and sent
+// through the apply endpoint's `documents[]` array.
 const URL_ONLY_FIELDS = { portfoliolink: 'portfolio_link', workprofile: 'work_profile', worksamples: 'work_samples' };
 const RESUME_FIELD_NAMES = new Set(['cv', 'resume', 'curriculumvitae']);
 function normalizeFieldName(name) {
@@ -28,21 +28,63 @@ function normalizeFieldName(name) {
 }
 
 function splitRequiredDocs(job) {
-  const supportedDocs = [];
-  const unsupportedMandatoryDocs = [];
+  const urlDocs = [];
+  const fileDocs = [];
   for (const doc of job.requiredDocuments || []) {
     const norm = normalizeFieldName(doc.fieldName || doc.name);
     if (RESUME_FIELD_NAMES.has(norm)) continue;
-    if (URL_ONLY_FIELDS[norm]) supportedDocs.push({ ...doc, key: URL_ONLY_FIELDS[norm] });
-    else if (doc.mandatory) unsupportedMandatoryDocs.push(doc);
+    if (URL_ONLY_FIELDS[norm]) urlDocs.push({ ...doc, key: URL_ONLY_FIELDS[norm] });
+    else fileDocs.push(doc);
   }
-  return { supportedDocs, unsupportedMandatoryDocs };
+  return { urlDocs, fileDocs };
 }
 
-function ExtraFields({ job, supportedDocs, urlFields, setUrlFields, answers, setAnswers, disabled }) {
+/** A single required-document file upload — uploads immediately on selection
+ * via the generic /uploads endpoint, then reports the resulting URL up. */
+function FileDocField({ doc, url, onUploaded, disabled }) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+  const [fileName, setFileName] = useState('');
+
+  async function handleChange(e) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setError('');
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await uploadFile('/uploads', fd);
+      if (!res?.url) throw new Error('Upload failed. File storage may not be configured on this server.');
+      setFileName(file.name);
+      onUploaded(doc.name, res.url);
+    } catch (err) {
+      setError(err.message || 'Upload failed');
+      onUploaded(doc.name, null);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div>
+      <label className={labelClass}>{doc.name} {doc.mandatory && <span className="text-red-500">*</span>}</label>
+      <input
+        className={inputClass} type="file" accept="application/pdf,image/jpeg,image/png,image/webp"
+        onChange={handleChange} disabled={disabled || uploading}
+      />
+      {uploading && <p className="text-xs text-gray-400 mt-1">Uploading…</p>}
+      {url && !uploading && <p className="text-xs text-green-600 mt-1">✓ {fileName || 'Uploaded'}</p>}
+      {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function ExtraFields({ job, urlDocs, urlFields, setUrlFields, fileDocs, fileDocsState, setFileDocsState, answers, setAnswers, disabled }) {
   return (
     <>
-      {supportedDocs.map((d) => (
+      {urlDocs.map((d) => (
         <div key={d._id || d.key}>
           <label className={labelClass}>{d.name} {d.mandatory && <span className="text-red-500">*</span>}</label>
           <input
@@ -52,6 +94,15 @@ function ExtraFields({ job, supportedDocs, urlFields, setUrlFields, answers, set
             disabled={disabled}
           />
         </div>
+      ))}
+      {fileDocs.map((d) => (
+        <FileDocField
+          key={d._id || d.name}
+          doc={d}
+          url={fileDocsState[d.name]}
+          onUploaded={(name, url) => setFileDocsState((prev) => ({ ...prev, [name]: url }))}
+          disabled={disabled}
+        />
       ))}
       {(job.customQuestions || []).map((q, i) => (
         <div key={q._id || i}>
@@ -89,12 +140,12 @@ function ModalShell({ title, onClose, loading, children }) {
 function SignedInApplyForm({ job, holder, onClose, onSuccess }) {
   const { credentials } = useCredentials();
   const { entries: workExperiences } = useWorkHistory();
-  const { supportedDocs, unsupportedMandatoryDocs } = useMemo(() => splitRequiredDocs(job), [job]);
-  const blockedByUnsupportedDoc = unsupportedMandatoryDocs.length > 0;
+  const { urlDocs, fileDocs } = useMemo(() => splitRequiredDocs(job), [job]);
 
   const [coverLetter, setCoverLetter] = useState('');
   const [answers, setAnswers] = useState(() => (job.customQuestions || []).map(() => ''));
   const [urlFields, setUrlFields] = useState({ portfolio_link: '', work_profile: '', work_samples: '' });
+  const [fileDocsState, setFileDocsState] = useState({});
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState('idle');
   const [error, setError] = useState('');
@@ -106,7 +157,8 @@ function SignedInApplyForm({ job, holder, onClose, onSuccess }) {
     setError('');
     if (job.requireCoverLetter && !coverLetter.trim()) return setError('This position requires a cover letter.');
     if ((job.customQuestions || []).some((q, i) => q.mandatory && !answers[i]?.trim())) return setError('Please answer all required questions.');
-    if (supportedDocs.some((d) => d.mandatory && !urlFields[d.key]?.trim())) return setError('Please provide all required links.');
+    if (urlDocs.some((d) => d.mandatory && !urlFields[d.key]?.trim())) return setError('Please provide all required links.');
+    if (fileDocs.some((d) => d.mandatory && !fileDocsState[d.name])) return setError('Please upload all required documents.');
     if (missingContactInfo) return setError('Add a phone number to your passport profile (Settings) before applying.');
 
     setLoading(true);
@@ -132,6 +184,7 @@ function SignedInApplyForm({ job, holder, onClose, onSuccess }) {
         portfolio_link: urlFields.portfolio_link.trim() || undefined,
         work_profile: urlFields.work_profile.trim() || undefined,
         work_samples: urlFields.work_samples.trim() || undefined,
+        documents: fileDocs.filter((d) => fileDocsState[d.name]).map((d) => ({ name: d.name, url: fileDocsState[d.name] })),
         custom_answers: (job.customQuestions || []).map((q, i) => ({ question: q.question, answer: answers[i] || '' })),
       });
       onSuccess(result.data);
@@ -151,21 +204,20 @@ function SignedInApplyForm({ job, holder, onClose, onSuccess }) {
         Your resume will be generated automatically from your Cazini profile (work history + credentials) and attached to this application.
       </p>
       {error && <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>}
-      {blockedByUnsupportedDoc && (
-        <div className="mb-4 px-4 py-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm">
-          This position requires {unsupportedMandatoryDocs.map((d) => d.name).join(', ')}, which isn&apos;t supported here yet. Please apply directly on the employer&apos;s site.
-        </div>
-      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className={labelClass}>Cover Letter {job.requireCoverLetter && <span className="text-red-500">*</span>}</label>
           <textarea className={inputClass} rows={4} maxLength={500} value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)}
-            placeholder="Briefly say why you're a good fit (max 500 characters)" disabled={loading || blockedByUnsupportedDoc} />
+            placeholder="Briefly say why you're a good fit (max 500 characters)" disabled={loading} />
         </div>
-        <ExtraFields job={job} supportedDocs={supportedDocs} urlFields={urlFields} setUrlFields={setUrlFields} answers={answers} setAnswers={setAnswers} disabled={loading || blockedByUnsupportedDoc} />
+        <ExtraFields
+          job={job} urlDocs={urlDocs} urlFields={urlFields} setUrlFields={setUrlFields}
+          fileDocs={fileDocs} fileDocsState={fileDocsState} setFileDocsState={setFileDocsState}
+          answers={answers} setAnswers={setAnswers} disabled={loading}
+        />
         <div className="flex items-center justify-end gap-3 pt-2">
           <button type="button" onClick={onClose} disabled={loading} className="px-4 py-2.5 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-60 cursor-pointer">Cancel</button>
-          <button type="submit" disabled={loading || blockedByUnsupportedDoc} className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-60 cursor-pointer" style={{ backgroundColor: PRIMARY }}>
+          <button type="submit" disabled={loading} className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-60 cursor-pointer" style={{ backgroundColor: PRIMARY }}>
             {loading ? (<><span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />{stageLabel}</>) : 'Submit Application'}
           </button>
         </div>
@@ -176,8 +228,7 @@ function SignedInApplyForm({ job, holder, onClose, onSuccess }) {
 
 /** Guest path: no account required — matches the Workable apply pattern. */
 function GuestApplyForm({ job, onClose, onSuccess }) {
-  const { supportedDocs, unsupportedMandatoryDocs } = useMemo(() => splitRequiredDocs(job), [job]);
-  const blockedByUnsupportedDoc = unsupportedMandatoryDocs.length > 0;
+  const { urlDocs, fileDocs } = useMemo(() => splitRequiredDocs(job), [job]);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -187,6 +238,7 @@ function GuestApplyForm({ job, onClose, onSuccess }) {
   const [coverLetter, setCoverLetter] = useState('');
   const [answers, setAnswers] = useState(() => (job.customQuestions || []).map(() => ''));
   const [urlFields, setUrlFields] = useState({ portfolio_link: '', work_profile: '', work_samples: '' });
+  const [fileDocsState, setFileDocsState] = useState({});
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState('idle');
   const [error, setError] = useState('');
@@ -200,7 +252,8 @@ function GuestApplyForm({ job, onClose, onSuccess }) {
     if (!resumeFile) return setError('Please attach your resume (PDF).');
     if (job.requireCoverLetter && !coverLetter.trim()) return setError('This position requires a cover letter.');
     if ((job.customQuestions || []).some((q, i) => q.mandatory && !answers[i]?.trim())) return setError('Please answer all required questions.');
-    if (supportedDocs.some((d) => d.mandatory && !urlFields[d.key]?.trim())) return setError('Please provide all required links.');
+    if (urlDocs.some((d) => d.mandatory && !urlFields[d.key]?.trim())) return setError('Please provide all required links.');
+    if (fileDocs.some((d) => d.mandatory && !fileDocsState[d.name])) return setError('Please upload all required documents.');
 
     setLoading(true);
     try {
@@ -222,6 +275,7 @@ function GuestApplyForm({ job, onClose, onSuccess }) {
         portfolio_link: urlFields.portfolio_link.trim() || undefined,
         work_profile: urlFields.work_profile.trim() || undefined,
         work_samples: urlFields.work_samples.trim() || undefined,
+        documents: fileDocs.filter((d) => fileDocsState[d.name]).map((d) => ({ name: d.name, url: fileDocsState[d.name] })),
         custom_answers: (job.customQuestions || []).map((q, i) => ({ question: q.question, answer: answers[i] || '' })),
       });
       onSuccess(result.data);
@@ -234,7 +288,7 @@ function GuestApplyForm({ job, onClose, onSuccess }) {
   }
 
   const stageLabel = { uploading: 'Uploading resume…', submitting: 'Submitting application…' }[stage];
-  const disabled = loading || blockedByUnsupportedDoc;
+  const disabled = loading;
 
   return (
     <ModalShell title={`Apply to ${job.title}`} onClose={onClose} loading={loading}>
@@ -243,11 +297,6 @@ function GuestApplyForm({ job, onClose, onSuccess }) {
         <Link href="/register" className="font-semibold underline" style={{ color: PRIMARY }}>Create a free profile</Link> instead to auto-fill this from your work history next time.
       </p>
       {error && <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>}
-      {blockedByUnsupportedDoc && (
-        <div className="mb-4 px-4 py-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm">
-          This position requires {unsupportedMandatoryDocs.map((d) => d.name).join(', ')}, which isn&apos;t supported here yet. Please apply directly on the employer&apos;s site.
-        </div>
-      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -280,7 +329,11 @@ function GuestApplyForm({ job, onClose, onSuccess }) {
           <textarea className={inputClass} rows={4} maxLength={500} value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)}
             placeholder="Briefly say why you're a good fit (max 500 characters)" disabled={disabled} />
         </div>
-        <ExtraFields job={job} supportedDocs={supportedDocs} urlFields={urlFields} setUrlFields={setUrlFields} answers={answers} setAnswers={setAnswers} disabled={disabled} />
+        <ExtraFields
+          job={job} urlDocs={urlDocs} urlFields={urlFields} setUrlFields={setUrlFields}
+          fileDocs={fileDocs} fileDocsState={fileDocsState} setFileDocsState={setFileDocsState}
+          answers={answers} setAnswers={setAnswers} disabled={disabled}
+        />
         <div className="flex items-center justify-end gap-3 pt-2">
           <button type="button" onClick={onClose} disabled={loading} className="px-4 py-2.5 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-60 cursor-pointer">Cancel</button>
           <button type="submit" disabled={disabled} className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded-xl transition-colors disabled:opacity-60 cursor-pointer" style={{ backgroundColor: PRIMARY }}>

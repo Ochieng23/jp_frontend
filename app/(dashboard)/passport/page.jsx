@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import Link from 'next/link';
 import { useUser, useCredentials } from '../../../lib/hooks';
 import ShareLinkDialog from '../../../components/ShareLinkDialog';
 import { post, patch, uploadFile } from '../../../lib/api';
@@ -222,12 +223,6 @@ export default function PassportPage() {
         </div>
 
         <div className="relative mt-8 pt-6 border-t border-white/20 grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
-          {user?.unhcr_id && (
-            <div>
-              <p className="text-primary-300 text-xs uppercase tracking-wide">UNHCR ID</p>
-              <p className="font-semibold mt-0.5">{user.unhcr_id}</p>
-            </div>
-          )}
           {user?.email && (
             <div>
               <p className="text-primary-300 text-xs uppercase tracking-wide">Email</p>
@@ -270,6 +265,22 @@ export default function PassportPage() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Introduction video */}
+      {user?.intro_video_url && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-semibold text-gray-900">Introduction video</h2>
+            <Link href="/settings" className="text-sm font-medium text-primary-600 hover:text-primary-700">Manage</Link>
+          </div>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <video
+            src={user.intro_video_url}
+            controls
+            className="w-full max-w-md rounded-xl border border-gray-200 bg-black"
+          />
         </div>
       )}
 

@@ -204,26 +204,6 @@ export default function PassportCard({ user, hasActiveCredential }) {
             </span>
           </div>
 
-          {user.unhcr_id && (
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'rgba(96, 165, 250, 0.2)',
-                border: '1px solid rgba(96, 165, 250, 0.3)',
-                padding: '3px 10px',
-                borderRadius: 20,
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#93c5fd',
-                marginBottom: 8,
-              }}
-            >
-              <span>UNHCR</span>
-              <span style={{ color: '#bfdbfe' }}>{user.unhcr_id}</span>
-            </div>
-          )}
         </div>
       </div>
 
