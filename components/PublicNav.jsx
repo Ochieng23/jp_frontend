@@ -46,7 +46,7 @@ export default function PublicNav() {
               <Link
                 href="/passport"
                 className="text-[15px] font-semibold text-white px-[18px] py-2.5 rounded no-underline transition-colors"
-                style={{ backgroundColor: '#004038' }}
+                style={{ backgroundColor: '#148438' }}
               >
                 My Passport
               </Link>
@@ -62,7 +62,7 @@ export default function PublicNav() {
               <Link
                 href="/register"
                 className="text-[15px] font-semibold text-white px-[18px] py-2.5 rounded no-underline transition-colors hover:opacity-90"
-                style={{ backgroundColor: '#004038' }}
+                style={{ backgroundColor: '#148438' }}
               >
                 Create a profile
               </Link>

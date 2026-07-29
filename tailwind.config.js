@@ -10,19 +10,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Derived from jobs.workable.com's actual computed styles (the
-        // homepage/job-board design benchmark) — not a guessed palette.
+        // Anchored to the Cazini logo mark's actual green (#148438, sampled
+        // directly from the logo PNG) — 600 is that exact color.
         primary: {
-          50: '#e6f0ee',
-          100: '#c2dbd6',
-          200: '#9dc4bc',
-          300: '#5c9186',
-          400: '#2f7669',
-          500: '#00594d',
-          600: '#004038',
-          700: '#00332c',
-          800: '#002620',
-          900: '#001f1a',
+          50: '#effaf3',
+          100: '#d6f5e0',
+          200: '#abedc0',
+          300: '#67e48f',
+          400: '#24db5f',
+          500: '#1bb14b',
+          600: '#148438',
+          700: '#10672c',
+          800: '#0c4d20',
+          900: '#083718',
         },
         cream: '#faf8f4',
       },

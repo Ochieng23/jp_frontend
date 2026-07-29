@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const AVATAR_COLORS = ['#004038', '#2E4BDA', '#B45309', '#7C3AED', '#0E7490', '#BE185D'];
+const AVATAR_COLORS = ['#148438', '#2E4BDA', '#B45309', '#7C3AED', '#0E7490', '#BE185D'];
 
 function avatarColor(seed) {
   let hash = 0;
@@ -39,7 +39,7 @@ export default function JobRow({ job, divider = true }) {
         {initial}
       </div>
       <div className="min-w-0 flex-1">
-        <h3 className="font-bold text-base leading-snug" style={{ color: '#004038' }}>{job.title}</h3>
+        <h3 className="font-bold text-base leading-snug" style={{ color: '#148438' }}>{job.title}</h3>
         <p className="text-sm text-gray-600 mt-0.5">
           at {name}
           {job.jobType && <> · <span className="font-semibold capitalize">{job.jobType}</span></>}

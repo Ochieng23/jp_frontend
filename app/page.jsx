@@ -8,8 +8,8 @@ import JobCard, { JobCardSkeleton } from '../components/JobCard';
 import CaziniLogo from '../components/CaziniLogo';
 import { useJobs } from '../lib/hooks';
 
-const GREEN = '#004038';
-const GREEN_LIGHT = '#00594d';
+const GREEN = '#148438';
+const GREEN_LIGHT = '#1bb14b';
 
 const inputClass = 'w-full px-0 py-3.5 text-[15px] outline-none bg-transparent text-gray-900 placeholder-gray-400 border-0';
 

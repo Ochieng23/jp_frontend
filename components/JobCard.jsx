@@ -30,9 +30,9 @@ export default function JobCard({ job }) {
   return (
     <Link
       href={`/jobs/${job.id}`}
-      className="group border border-gray-100 rounded-md p-6 flex flex-col gap-3.5 no-underline transition-all duration-150 hover:shadow-[0_2px_10px_rgba(0,64,56,0.08)]"
+      className="group border border-gray-100 rounded-md p-6 flex flex-col gap-3.5 no-underline transition-all duration-150 hover:shadow-[0_2px_10px_rgba(20,132,56,0.08)]"
       style={{ borderColor: undefined }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#00594d'; }}
+      onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#1bb14b'; }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; }}
     >
       <div className="flex items-start justify-between gap-2">
@@ -40,7 +40,7 @@ export default function JobCard({ job }) {
         {job.jobType && (
           <span
             className="flex-shrink-0 font-mono text-[11px] font-medium uppercase tracking-wider px-2 py-1 rounded whitespace-nowrap"
-            style={{ backgroundColor: '#e6f0ee', color: '#00332c' }}
+            style={{ backgroundColor: '#effaf3', color: '#10672c' }}
           >
             {job.jobType}
           </span>
@@ -53,7 +53,7 @@ export default function JobCard({ job }) {
 
       <div className="mt-auto pt-3.5 border-t border-gray-50 flex items-center justify-between">
         <span className="text-[13px] text-gray-400">{timeAgo(job.posted_at)}</span>
-        <span className="text-sm font-medium group-hover:underline" style={{ color: '#004038' }}>
+        <span className="text-sm font-medium group-hover:underline" style={{ color: '#148438' }}>
           View role →
         </span>
       </div>

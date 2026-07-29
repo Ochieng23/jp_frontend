@@ -89,7 +89,7 @@ function JobSearchPageInner() {
             <button
               type="button"
               className="font-bold text-white px-6 py-3 text-sm cursor-pointer"
-              style={{ backgroundColor: '#004038' }}
+              style={{ backgroundColor: '#148438' }}
               onClick={resetPaging}
             >
               Search jobs
@@ -156,7 +156,7 @@ function JobSearchPageInner() {
                   <button
                     onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
                     className="inline-block border-2 font-semibold px-6 py-3 rounded-full text-sm hover:bg-white transition-colors cursor-pointer"
-                    style={{ borderColor: '#004038', color: '#004038' }}
+                    style={{ borderColor: '#148438', color: '#148438' }}
                   >
                     Show more jobs
                   </button>

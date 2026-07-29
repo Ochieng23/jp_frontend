@@ -13,7 +13,7 @@ button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #00594d;
+  outline: 2px solid #1bb14b;
   outline-offset: 2px;
 }
 
@@ -27,8 +27,8 @@ select:focus-visible {
    kept here until all pages are migrated.
    ────────────────────────────────────────────────────────────────────────── */
 :root {
-  --color-primary: #004038;
-  --color-primary-dark: #00332c;
+  --color-primary: #148438;
+  --color-primary-dark: #10672c;
   --color-bg: #f9fafb;
   --color-surface: #ffffff;
   --color-text: #111928;
@@ -80,7 +80,7 @@ button { font-family: var(--font); font-size: inherit; cursor: pointer; border: 
   font-size: 14px; font-family: var(--font); color: var(--color-text); background: var(--color-surface);
   transition: border-color 0.15s ease, box-shadow 0.15s ease; outline: none; width: 100%;
 }
-.form-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 2px rgba(0,64,56,0.2); }
+.form-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 2px rgba(20,132,56,0.2); }
 .form-input.error { border-color: var(--color-danger); }
 .form-error { font-size: 12px; color: var(--color-danger); }
 .form-hint { font-size: 12px; color: var(--color-text-muted); }
