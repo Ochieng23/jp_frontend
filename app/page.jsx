@@ -8,7 +8,11 @@ import JobCard, { JobCardSkeleton } from '../components/JobCard';
 import CaziniLogo from '../components/CaziniLogo';
 import { useJobs } from '../lib/hooks';
 
-const GREEN = '#148438';
+// GREEN is the large-section background/text tone — a deep, uniform forest
+// green (not the bright logo-mark green, which looks garish at hero scale).
+// GREEN_LIGHT is reserved for small vivid accents (buttons, numerals) where
+// a pop of the actual brand green reads as a highlight, not a wash.
+const GREEN = '#0c4d20';
 const GREEN_LIGHT = '#1bb14b';
 
 const inputClass = 'w-full px-0 py-3.5 text-[15px] outline-none bg-transparent text-gray-900 placeholder-gray-400 border-0';
@@ -168,7 +172,7 @@ export default function HomePage() {
                     key={s}
                     href={`/jobs?search=${encodeURIComponent(s)}`}
                     className="text-[13px] text-white border rounded-full px-3 py-1.5 no-underline transition-colors"
-                    style={{ borderColor: '#3d6058' }}
+                    style={{ borderColor: 'rgba(255,255,255,0.25)' }}
                   >
                     {s}
                   </Link>
@@ -180,7 +184,7 @@ export default function HomePage() {
           {/* Right column — credential panel */}
           <div
             className="rounded-md p-7 border"
-            style={{ backgroundColor: GREEN_LIGHT, borderColor: '#3d6058' }}
+            style={{ backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.16)' }}
           >
             <h2 className="text-[15px] font-semibold mb-2">Your credential travels with you</h2>
             <p className="text-sm leading-[1.6] mb-5" style={{ color: '#cfe3de' }}>
@@ -188,11 +192,11 @@ export default function HomePage() {
             </p>
 
             {stats && (
-              <div className="grid gap-px rounded overflow-hidden" style={{ backgroundColor: '#3d6058' }}>
+              <div className="grid gap-px rounded overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.16)' }}>
                 {stats.map((s) => (
-                  <div key={s.label} className="flex items-center justify-between px-[18px] py-4" style={{ backgroundColor: GREEN_LIGHT }}>
+                  <div key={s.label} className="flex items-center justify-between px-[18px] py-4" style={{ backgroundColor: 'rgba(12,77,32,0.6)' }}>
                     <span className="text-sm" style={{ color: '#cfe3de' }}>{s.label}</span>
-                    <span className="font-mono text-lg font-medium" style={{ color: '#a7e8d0' }}>{s.value}</span>
+                    <span className="font-mono text-lg font-medium" style={{ color: GREEN_LIGHT }}>{s.value}</span>
                   </div>
                 ))}
               </div>
@@ -259,7 +263,7 @@ export default function HomePage() {
           >
             {HOW_IT_WORKS.map((step) => (
               <div key={step.n} className="bg-white p-7">
-                <p className="font-mono text-xs mb-3" style={{ color: GREEN_LIGHT }}>{step.n}</p>
+                <p className="font-mono text-xs mb-3" style={{ color: GREEN }}>{step.n}</p>
                 <h3 className="text-[17px] font-semibold text-gray-900 mb-2 tracking-tight">{step.title}</h3>
                 <p className="text-sm leading-[1.6] text-gray-500">{step.body}</p>
               </div>

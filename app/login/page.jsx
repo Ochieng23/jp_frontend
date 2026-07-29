@@ -49,7 +49,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left panel */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-primary-600 to-primary-900 flex-col items-center justify-center p-12 text-white">
+      <div className="hidden lg:flex w-1/2 bg-primary-800 flex-col items-center justify-center p-12 text-white">
         <div className="max-w-sm w-full">
           <div className="mb-10">
             <Link href="/" className="no-underline inline-block">

@@ -69,7 +69,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left panel */}
-      <div className="hidden lg:flex w-2/5 bg-gradient-to-br from-primary-600 to-primary-900 flex-col items-center justify-center p-12 text-white">
+      <div className="hidden lg:flex w-2/5 bg-primary-800 flex-col items-center justify-center p-12 text-white">
         <div className="max-w-xs w-full">
           <div className="mb-10">
             <Link href="/" className="no-underline inline-block">
@@ -92,7 +92,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Right panel */}
-      <div className="flex-1 flex items-start justify-center px-6 py-10 bg-white overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center px-6 py-10 bg-white overflow-y-auto">
         <div className="w-full max-w-lg">
           <div className="lg:hidden mb-8">
             <Link href="/" className="no-underline inline-block">

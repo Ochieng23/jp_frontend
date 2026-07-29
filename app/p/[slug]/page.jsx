@@ -231,7 +231,7 @@ export default function PublicPassportPage() {
         {!loading && !expired && !errorMsg && data && (
           <>
             {/* Profile hero card */}
-            <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 rounded-3xl p-8 text-white shadow-xl shadow-primary-200 relative overflow-hidden">
+            <div className="bg-primary-800 rounded-3xl p-8 text-white shadow-xl shadow-primary-200 relative overflow-hidden">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full" />
               <div className="absolute -bottom-6 -left-6 w-28 h-28 bg-white/5 rounded-full" />
 
