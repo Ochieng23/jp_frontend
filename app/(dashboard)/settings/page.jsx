@@ -182,6 +182,21 @@ export default function SettingsPage() {
     }
   }
 
+  async function handleRemoveAvatar() {
+    setAvatarError('');
+    setAvatarUploading(true);
+    try {
+      const result = await patch('/passport/me', { avatar_key: null });
+      mutate({ data: result.data }, false);
+      setUser(result.data);
+      setAvatarPreview(null);
+    } catch (err) {
+      setAvatarError(err.message || 'Failed to remove photo. Please try again.');
+    } finally {
+      setAvatarUploading(false);
+    }
+  }
+
   const VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
 
   async function handleVideoChange(e) {
@@ -296,14 +311,34 @@ export default function SettingsPage() {
                 className="hidden"
                 onChange={handleAvatarChange}
               />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={avatarUploading}
-                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              >
-                {avatarUploading ? 'Uploading…' : 'Upload new photo'}
-              </button>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={avatarUploading}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {avatarUploading ? 'Uploading…' : avatarSrc ? 'Replace photo' : 'Upload photo'}
+                </button>
+                {user?.avatar_key && (
+                  <>
+                    <a
+                      href="/api/passport/me/avatar/download"
+                      className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors no-underline"
+                    >
+                      Download
+                    </a>
+                    <button
+                      type="button"
+                      onClick={handleRemoveAvatar}
+                      disabled={avatarUploading}
+                      className="px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      Remove
+                    </button>
+                  </>
+                )}
+              </div>
               <p className="text-xs text-gray-400 mt-1.5">JPG, PNG or WebP — max 5 MB</p>
               {avatarError && <p className="text-xs text-red-600 mt-1">{avatarError}</p>}
             </div>

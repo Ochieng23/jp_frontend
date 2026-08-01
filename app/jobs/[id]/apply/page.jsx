@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import PublicNav from '../../../../components/PublicNav';
 import { useJob, useOptionalUser, useCredentials, useWorkHistory, useEducation, useMyApplications } from '../../../../lib/hooks';
@@ -347,12 +347,18 @@ function SuccessScreen({ job, isGuest }) {
   );
 }
 
+/** Only mounted for signed-in users — useMyApplications() hits an
+ * authenticated endpoint whose 401 handler hard-redirects to /login,
+ * which would bounce logged-out visitors opening a shared apply link. */
+function AlreadyAppliedCheck({ jobId, children }) {
+  const { applications } = useMyApplications();
+  return children(applications.some((a) => a.kazini_job_id === jobId));
+}
+
 export default function ApplyPage() {
   const { id } = useParams();
-  const router = useRouter();
   const { job, isLoading, error } = useJob(id);
   const { user } = useOptionalUser();
-  const { applications } = useMyApplications();
   const [submitted, setSubmitted] = useState(false);
 
   if (isLoading || user === undefined) {
@@ -380,9 +386,7 @@ export default function ApplyPage() {
     );
   }
 
-  const alreadyApplied = !submitted && user && applications.some((a) => a.kazini_job_id === job.id);
-
-  return (
+  const renderBody = (alreadyApplied) => (
     <div className="min-h-screen bg-white">
       <PublicNav />
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
@@ -413,4 +417,10 @@ export default function ApplyPage() {
       </div>
     </div>
   );
+
+  return user ? (
+    <AlreadyAppliedCheck jobId={job.id}>
+      {(alreadyApplied) => renderBody(!submitted && alreadyApplied)}
+    </AlreadyAppliedCheck>
+  ) : renderBody(false);
 }
