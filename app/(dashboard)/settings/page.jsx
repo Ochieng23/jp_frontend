@@ -208,8 +208,8 @@ export default function SettingsPage() {
       setVideoError('Please select an MP4, WEBM, or MOV video file.');
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      setVideoError('Video must be under 10 MB.');
+    if (file.size > 50 * 1024 * 1024) {
+      setVideoError('Video must be under 50 MB.');
       return;
     }
 
@@ -397,7 +397,7 @@ export default function SettingsPage() {
               >
                 {videoUploading ? 'Uploading…' : 'Upload video'}
               </button>
-              <p className="text-xs text-gray-400 mt-1.5">MP4, WEBM, or MOV — max 10 MB</p>
+              <p className="text-xs text-gray-400 mt-1.5">MP4, WEBM, or MOV — max 50 MB. Videos are automatically screened for inappropriate content.</p>
             </div>
           )}
           {videoError && <p className="text-xs text-red-600 mt-2">{videoError}</p>}
