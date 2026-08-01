@@ -14,7 +14,6 @@ const NAV_LINKS = [
   { href: '/recognition', label: 'Recognition', icon: '🌍' },
   { href: '/jobs', label: 'Job Board', icon: '🔎' },
   { href: '/jobs/applications', label: 'My Applications', icon: '📋' },
-  { href: '/share', label: 'Share Links', icon: '🔗' },
   { href: '/settings', label: 'Settings', icon: '⚙️' },
 ];
 

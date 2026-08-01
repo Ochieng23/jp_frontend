@@ -122,8 +122,7 @@ export default function ShareLinkDialog({ isOpen, onClose, shareToken, error, lo
               </div>
 
               <p className="text-xs text-gray-400 text-center">
-                Manage and revoke share links from the{' '}
-                <a href="/share" className="text-primary-600 hover:text-primary-700 font-medium">Share Links page</a>.
+                This link expires automatically — generate a new one any time from My Passport.
               </p>
             </div>
           )}

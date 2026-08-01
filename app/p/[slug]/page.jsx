@@ -104,6 +104,26 @@ function CredentialCard({ cred }) {
   );
 }
 
+function EducationCard({ edu }) {
+  const dateRange = edu.start_date
+    ? `${fmtDate(edu.start_date)} — ${edu.is_current ? 'Present' : (edu.end_date ? fmtDate(edu.end_date) : '—')}`
+    : null;
+  return (
+    <div className="bg-white border border-gray-100 rounded-xl p-4 transition-shadow hover:shadow-md">
+      <div className="flex items-start gap-3">
+        <span className="text-xl flex-shrink-0 mt-0.5">🎓</span>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-900 text-sm leading-snug">{edu.qualification}</h3>
+          <p className="text-xs text-gray-500 mt-0.5">{edu.institution_name}{edu.location ? ` · ${edu.location}` : ''}</p>
+          {dateRange && (
+            <p className="text-xs text-gray-400 mt-1.5">{dateRange}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function WorkCard({ work }) {
   const verified = work.verified;
   const dateRange = work.start_date
@@ -181,6 +201,7 @@ export default function PublicPassportPage() {
   const holder = data?.holder;
   const credentials = data?.credentials || [];
   const workExperiences = data?.workExperiences || [];
+  const education = data?.education || [];
   const verifiedCreds = credentials.filter(isVerified);
   const pendingCreds = credentials.filter((c) => !isVerified(c));
   const verifiedWork = workExperiences.filter((w) => w.verified);
@@ -331,7 +352,8 @@ export default function PublicPassportPage() {
                 <video
                   src={holder.intro_video_url}
                   controls
-                  className="w-full rounded-xl border border-gray-200 bg-black"
+                  preload="metadata"
+                  className="w-full max-w-xl aspect-video object-contain rounded-xl border border-gray-200 bg-black"
                 />
               </section>
             )}
@@ -359,7 +381,19 @@ export default function PublicPassportPage() {
               </section>
             )}
 
-            {credentials.length === 0 && workExperiences.length === 0 && (
+            {/* Education */}
+            {education.length > 0 && (
+              <section>
+                <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-3">Education</h2>
+                <div className="space-y-2">
+                  {education.map((edu) => (
+                    <EducationCard key={edu._id || edu.id} edu={edu} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {credentials.length === 0 && workExperiences.length === 0 && education.length === 0 && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
                 <div className="text-3xl mb-2">📋</div>
                 <p className="text-sm text-gray-500">No credentials or work history to display.</p>

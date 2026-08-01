@@ -279,7 +279,8 @@ export default function PassportPage() {
           <video
             src={user.intro_video_url}
             controls
-            className="w-full max-w-md rounded-xl border border-gray-200 bg-black"
+            preload="metadata"
+            className="w-full max-w-xl aspect-video object-contain rounded-xl border border-gray-200 bg-black"
           />
         </div>
       )}

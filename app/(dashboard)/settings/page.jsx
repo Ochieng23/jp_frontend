@@ -357,10 +357,11 @@ export default function SettingsPage() {
                 <video
                   src={videoSrc}
                   controls
-                  className="w-full max-w-sm rounded-xl border border-gray-200 bg-black"
+                  preload="metadata"
+                  className="w-full max-w-md aspect-video object-contain rounded-xl border border-gray-200 bg-black"
                 />
                 {videoUploading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl max-w-sm">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl max-w-md">
                     <span className="inline-block w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   </div>
                 )}
