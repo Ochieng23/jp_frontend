@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import PublicNav from '../../../../components/PublicNav';
-import { useJob, useOptionalUser, useCredentials, useWorkHistory, useMyApplications } from '../../../../lib/hooks';
+import { useJob, useOptionalUser, useCredentials, useWorkHistory, useEducation, useMyApplications } from '../../../../lib/hooks';
 import { post, uploadFile } from '../../../../lib/api';
 
 const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:border-gray-500 disabled:opacity-60';
@@ -117,6 +117,7 @@ function ExtraFields({ job, urlDocs, urlFields, setUrlFields, fileDocs, fileDocs
 function SignedInApplyForm({ job, holder, onSuccess }) {
   const { credentials } = useCredentials();
   const { entries: workExperiences } = useWorkHistory();
+  const { entries: education } = useEducation();
   const { urlDocs, fileDocs } = useMemo(() => splitRequiredDocs(job), [job]);
 
   const [coverLetter, setCoverLetter] = useState('');
@@ -145,7 +146,7 @@ function SignedInApplyForm({ job, holder, onSuccess }) {
         import('@react-pdf/renderer'),
         import('../../../(dashboard)/jobs/ResumePDF'),
       ]);
-      const blob = await pdf(ResumePDF({ holder, credentials, workExperiences })).toBlob();
+      const blob = await pdf(ResumePDF({ holder, credentials, workExperiences, education })).toBlob();
 
       setStage('uploading');
       const fd = new FormData();

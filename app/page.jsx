@@ -310,7 +310,7 @@ export default function HomePage() {
           <div>
             <CaziniLogo markSize={32} wordmarkClassName="text-base" />
             <p className="text-sm leading-[1.6] text-gray-500 mt-3 max-w-[300px]">
-              Portable employment credentials for refugees and mobile workers.
+              Portable employment credentials for every jobseeker.
             </p>
           </div>
           {FOOTER_COLUMNS.map((col) => (

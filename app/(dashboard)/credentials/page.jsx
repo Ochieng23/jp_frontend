@@ -1,15 +1,18 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Link from 'next/link';
 import { useCredentials, useOrganizations } from '../../../lib/hooks';
 import CredentialBadge from '../../../components/CredentialBadge';
 import JurisdictionSelector from '../../../components/JurisdictionSelector';
 import Pagination from '../../../components/Pagination';
 import { post, uploadFile } from '../../../lib/api';
 
-const CREDENTIAL_TYPES = [
-  'employment', 'education', 'certification', 'skill', 'reference', 'license', 'identity',
-];
+// 'employment' and 'education' have their own dedicated, simpler pages
+// (Work History and Education) — offering them here too would just be a
+// second, more confusing way to add the same thing.
+const ADDABLE_TYPES = ['certification', 'skill', 'reference', 'license', 'identity'];
+const CREDENTIAL_TYPES = ['employment', 'education', ...ADDABLE_TYPES];
 
 const PAGE_SIZE = 12;
 
@@ -27,10 +30,10 @@ const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-400 text-sm
 const labelClass = 'block text-sm font-medium text-gray-700 mb-1.5';
 
 function AddCredentialModal({ isOpen, onClose, onSuccess }) {
-  const { organizations, isLoading: orgsLoading } = useOrganizations();
+  const { organizations } = useOrganizations();
   const [form, setForm] = useState({
-    title: '', type: 'employment', issuer_id: '', jurisdiction_id: '',
-    issued_at: '', expires_at: '', description: '', metadata: '',
+    title: '', type: 'certification', issuer: '', jurisdiction_id: '',
+    issued_at: '', expires_at: '', description: '',
   });
   const [file, setFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
@@ -63,7 +66,7 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
     e.preventDefault();
     setError('');
     if (!form.title.trim()) { setError('Title is required'); return; }
-    if (!form.issuer_id) { setError('Please select who issued this credential'); return; }
+    if (!form.issuer.trim()) { setError('Please say who issued this credential'); return; }
     if (!form.issued_at) { setError('Issue date is required'); return; }
 
     setLoading(true);
@@ -82,16 +85,19 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
       const payload = {
         title: form.title.trim(),
         type: form.type,
-        issuer_id: form.issuer_id,
         issued_at: form.issued_at,
       };
+      // If the typed issuer matches a registered organisation by name,
+      // link to it (enables real verification); otherwise it's free text.
+      const matchedOrg = organizations.find(
+        (org) => org.name.trim().toLowerCase() === form.issuer.trim().toLowerCase()
+      );
+      if (matchedOrg) payload.issuer_id = matchedOrg._id || matchedOrg.id;
+      else payload.issuer_name = form.issuer.trim();
+
       if (form.jurisdiction_id) payload.jurisdiction_id = form.jurisdiction_id;
       if (form.expires_at) payload.expires_at = form.expires_at;
       if (form.description.trim()) payload.description = form.description.trim();
-      if (form.metadata.trim()) {
-        try { payload.metadata = JSON.parse(form.metadata); }
-        catch { setError('Metadata must be valid JSON'); setLoading(false); return; }
-      }
       if (document_url) payload.document_url = document_url;
       if (document_key) payload.document_key = document_key;
 
@@ -119,6 +125,10 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
         </div>
 
         <div className="px-6 py-5">
+          <p className="mb-4 text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+            Adding a school or a past job? Use <Link href="/education" className="font-semibold text-primary-700 underline">Education</Link> or{' '}
+            <Link href="/work-history" className="font-semibold text-primary-700 underline">Work History</Link> instead — this is for certifications, licenses, skills, references, and IDs.
+          </p>
           {error && (
             <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
               {error}
@@ -141,7 +151,7 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
               <div>
                 <label className={labelClass}>Type <span className="text-red-500">*</span></label>
                 <select name="type" className={inputClass} value={form.type} onChange={handleChange} disabled={loading}>
-                  {CREDENTIAL_TYPES.map((t) => (
+                  {ADDABLE_TYPES.map((t) => (
                     <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
                   ))}
                 </select>
@@ -158,18 +168,17 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
             {/* Issuer */}
             <div>
               <label className={labelClass}>Issued by <span className="text-red-500">*</span></label>
-              <select
-                name="issuer_id" className={inputClass} value={form.issuer_id}
-                onChange={handleChange} disabled={loading || orgsLoading}
-              >
-                <option value="">{orgsLoading ? 'Loading organisations…' : 'Select an organisation…'}</option>
+              <input
+                name="issuer" list="issuer-suggestions" className={inputClass} value={form.issuer}
+                onChange={handleChange} placeholder="e.g. Kenya Red Cross Society"
+                disabled={loading}
+              />
+              <datalist id="issuer-suggestions">
                 {organizations.map((org) => (
-                  <option key={org._id || org.id} value={org._id || org.id}>{org.name}</option>
+                  <option key={org._id || org.id} value={org.name} />
                 ))}
-              </select>
-              {!orgsLoading && organizations.length === 0 && (
-                <p className="mt-1 text-xs text-gray-500">No organisations are registered yet — check back once your issuer has joined Cazini.</p>
-              )}
+              </datalist>
+              <p className="mt-1 text-xs text-gray-400">Type the name of the organisation, institution, or body that issued this.</p>
             </div>
 
             {/* Dates */}
@@ -198,16 +207,6 @@ function AddCredentialModal({ isOpen, onClose, onSuccess }) {
                 name="description" className={inputClass} value={form.description}
                 onChange={handleChange} placeholder="Optional description of the credential"
                 disabled={loading} rows={3}
-              />
-            </div>
-
-            {/* Metadata */}
-            <div>
-              <label className={labelClass}>Additional Metadata (JSON)</label>
-              <textarea
-                name="metadata" className={inputClass} value={form.metadata}
-                onChange={handleChange} placeholder='{"grade": "A", "score": 95}'
-                disabled={loading} rows={2}
               />
             </div>
 
@@ -302,7 +301,7 @@ export default function CredentialsPage() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Credentials</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage your verifiable employment credentials</p>
+          <p className="text-sm text-gray-500 mt-0.5">Certifications, licenses, skills, references, and other credentials</p>
         </div>
         <button
           onClick={() => setAddOpen(true)}
@@ -380,7 +379,7 @@ export default function CredentialsPage() {
           <div className="text-5xl mb-4">🎓</div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No credentials found</h3>
           <p className="text-sm text-gray-500 mb-6">
-            {hasFilters ? 'Try adjusting your filters.' : 'Add your first employment credential to get started.'}
+            {hasFilters ? 'Try adjusting your filters.' : 'Add a certification, license, or other credential to get started.'}
           </p>
           {!hasFilters && (
             <button

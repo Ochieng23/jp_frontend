@@ -101,8 +101,8 @@ export default function CredentialBadge({ credential, readOnly }) {
         </div>
 
         {/* Issuer */}
-        {credential.issuer?.name && (
-          <div className="text-xs text-gray-500 truncate">{credential.issuer.name}</div>
+        {(credential.issuer?.name || credential.issuer_name) && (
+          <div className="text-xs text-gray-500 truncate">{credential.issuer?.name || credential.issuer_name}</div>
         )}
       </div>
 

@@ -58,7 +58,7 @@ export default function LoginPage() {
           </div>
           <h2 className="text-3xl font-bold mb-4 leading-tight">Your credentials travel with you</h2>
           <p className="text-primary-200 text-base mb-12 leading-relaxed">
-            A portable digital credential wallet for refugees and mobile workers crossing borders.
+            A portable digital credential wallet for jobseekers everywhere.
           </p>
           <div className="space-y-4">
             {[

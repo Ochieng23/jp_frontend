@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/passport', label: 'My Passport', icon: '🪪' },
   { href: '/credentials', label: 'Credentials', icon: '📜' },
   { href: '/work-history', label: 'Work History', icon: '💼' },
+  { href: '/education', label: 'Education', icon: '🎓' },
   { href: '/recognition', label: 'Recognition', icon: '🌍' },
   { href: '/jobs', label: 'Job Board', icon: '🔎' },
   { href: '/jobs/applications', label: 'My Applications', icon: '📋' },

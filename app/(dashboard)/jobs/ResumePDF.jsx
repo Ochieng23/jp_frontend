@@ -43,8 +43,11 @@ function fmtDate(d) {
  * (credentials + work experience), used as the resume attachment when applying
  * to a job via the job board.
  */
-export default function ResumePDF({ holder, credentials = [], workExperiences = [] }) {
+export default function ResumePDF({ holder, credentials = [], workExperiences = [], education = [] }) {
   const sortedWork = [...workExperiences].sort(
+    (a, b) => new Date(b.start_date) - new Date(a.start_date)
+  );
+  const sortedEducation = [...education].sort(
     (a, b) => new Date(b.start_date) - new Date(a.start_date)
   );
   const sortedCreds = [...credentials].sort(
@@ -79,6 +82,26 @@ export default function ResumePDF({ holder, credentials = [], workExperiences = 
                   {w.employer_name}{w.location ? ` · ${w.location}` : ''}
                 </Text>
                 {w.description && <Text style={styles.entryDesc}>{w.description}</Text>}
+              </View>
+            ))}
+          </>
+        )}
+
+        {sortedEducation.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Education</Text>
+            {sortedEducation.map((edu, i) => (
+              <View key={edu._id || edu.id || i} style={styles.entry}>
+                <View style={styles.entryTop}>
+                  <Text style={styles.entryTitle}>{edu.qualification}</Text>
+                  <Text style={styles.entryMeta}>
+                    {fmtDate(edu.start_date)} — {edu.is_current ? 'Present' : fmtDate(edu.end_date) || '—'}
+                  </Text>
+                </View>
+                <Text style={styles.entrySub}>
+                  {edu.institution_name}{edu.location ? ` · ${edu.location}` : ''}
+                </Text>
+                {edu.description && <Text style={styles.entryDesc}>{edu.description}</Text>}
               </View>
             ))}
           </>

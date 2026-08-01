@@ -190,7 +190,7 @@ async function generateAndDownloadPDF(credential) {
           <Text style={styles.sectionTitle}>Issuer</Text>
           <View style={styles.row}>
             <Text style={styles.label}>Name</Text>
-            <Text style={styles.value}>{credential.issuer?.name || 'Unknown'}</Text>
+            <Text style={styles.value}>{credential.issuer?.name || credential.issuer_name || 'Unknown'}</Text>
           </View>
           {credential.issuer?.did && (
             <View style={styles.row}>
@@ -411,8 +411,8 @@ export default function CredentialDetailPage() {
             <div className="card-header">
               <h2 className="card-title">Issuer</h2>
             </div>
-            <CredentialDetail label="Name" value={credential.issuer?.name} />
-            <CredentialDetail label="Type" value={credential.issuer?.type} />
+            <CredentialDetail label="Name" value={credential.issuer?.name || credential.issuer_name} />
+            {credential.issuer?.type && <CredentialDetail label="Type" value={credential.issuer.type} />}
             <CredentialDetail
               label="Jurisdiction"
               value={
