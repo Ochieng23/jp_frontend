@@ -8,13 +8,16 @@ import { post, patch, uploadFile } from '../../../lib/api';
 
 function StatCard({ label, value, icon, color, valueColor }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
+    // min-w-0 at both levels lets the card shrink below the label's
+    // min-content width in narrow grid columns ("JURISDICTIONS" alone is
+    // ~100px at this size) instead of forcing horizontal page scroll.
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 min-w-0">
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0 ${color}`}>
         {icon}
       </div>
-      <div>
+      <div className="min-w-0">
         <div className={`text-2xl font-bold ${valueColor || 'text-gray-900'}`}>{value}</div>
-        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mt-0.5">{label}</div>
+        <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mt-0.5 [overflow-wrap:anywhere]">{label}</div>
       </div>
     </div>
   );
@@ -243,7 +246,7 @@ export default function PassportPage() {
       )}
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Active Credentials"       value={activeCredentials.length}        icon="📜" color="bg-primary-50"   valueColor="text-primary-600"  />
         <StatCard label="Recognised Jurisdictions" value={recognisedJurisdictions.size}    icon="🌍" color="bg-green-50"  valueColor="text-green-600" />
         <StatCard label="Credential Types"         value={Object.keys(credByType).length}  icon="🗂️" color="bg-violet-50" valueColor="text-violet-600" />

@@ -385,7 +385,7 @@ export default function CredentialDetailPage() {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div className="grid gap-5 lg:grid-cols-2">
         {/* Left column */}
         <div>
           <div className="card" style={{ marginBottom: 20 }}>
