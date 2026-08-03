@@ -417,7 +417,9 @@ export default function CredentialsPage() {
         </>
       )}
 
-      <AddCredentialModal isOpen={addOpen} onClose={() => setAddOpen(false)} onSuccess={() => mutate()} />
+      {addOpen && (
+        <AddCredentialModal isOpen={addOpen} onClose={() => setAddOpen(false)} onSuccess={() => mutate()} />
+      )}
     </div>
   );
 }

@@ -50,6 +50,13 @@ function fmtDate(d) {
   return new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'short' }).format(new Date(d));
 }
 
+// document_url is API-settable and rendered straight into an href on a
+// page anyone with the link can view — the backend restricts it to
+// http(s) at write time, but this guards existing rows and defense in depth.
+function safeUrl(url) {
+  return /^https?:\/\//i.test(url || '') ? url : null;
+}
+
 function isVerified(cred) {
   return cred.proof_value && cred.proof_value !== 'PENDING_VERIFICATION';
 }
@@ -105,18 +112,34 @@ function CredentialCard({ cred }) {
 }
 
 function EducationCard({ edu }) {
+  const verified = edu.verified;
   const dateRange = edu.start_date
     ? `${fmtDate(edu.start_date)} — ${edu.is_current ? 'Present' : (edu.end_date ? fmtDate(edu.end_date) : '—')}`
     : null;
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-4 transition-shadow hover:shadow-md">
+    <div className={`bg-white border rounded-xl p-4 transition-shadow hover:shadow-md ${verified ? 'border-green-100' : 'border-amber-100'}`}>
       <div className="flex items-start gap-3">
         <span className="text-xl flex-shrink-0 mt-0.5">🎓</span>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 text-sm leading-snug">{edu.qualification}</h3>
-          <p className="text-xs text-gray-500 mt-0.5">{edu.institution_name}{edu.location ? ` · ${edu.location}` : ''}</p>
+          <div className="flex items-start justify-between gap-2 mb-1">
+            <div>
+              <h3 className="font-semibold text-gray-900 text-sm leading-snug">{edu.qualification}</h3>
+              <p className="text-xs text-gray-500 mt-0.5">{edu.institution_name}{edu.location ? ` · ${edu.location}` : ''}</p>
+            </div>
+            {verified ? <VerifiedBadge /> : <PendingBadge />}
+          </div>
           {dateRange && (
             <p className="text-xs text-gray-400 mt-1.5">{dateRange}</p>
+          )}
+          {safeUrl(edu.document_url) && (
+            <a
+              href={safeUrl(edu.document_url)}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-medium text-primary-700 hover:text-primary-800 mt-2"
+            >
+              📄 View certificate
+            </a>
           )}
         </div>
       </div>

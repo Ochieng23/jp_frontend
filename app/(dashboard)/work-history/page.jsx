@@ -351,11 +351,13 @@ export default function WorkHistoryPage() {
         </div>
       )}
 
-      <WorkEntryModal
-        isOpen={addOpen}
-        onClose={() => setAddOpen(false)}
-        onSuccess={() => mutate()}
-      />
+      {addOpen && (
+        <WorkEntryModal
+          isOpen={addOpen}
+          onClose={() => setAddOpen(false)}
+          onSuccess={() => mutate()}
+        />
+      )}
 
       {editEntry && (
         <WorkEntryModal

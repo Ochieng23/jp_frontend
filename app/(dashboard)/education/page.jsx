@@ -1,12 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useEducation } from '../../../lib/hooks';
-import { post, patch, del } from '../../../lib/api';
+import { post, patch, del, uploadFile } from '../../../lib/api';
 
 function formatDate(dateStr) {
   if (!dateStr) return null;
   return new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'short' }).format(new Date(dateStr));
+}
+
+// document_url is API-settable and rendered straight into an href — the
+// backend now restricts it to http(s) at write time, but this guards
+// existing rows written before that check existed and any other client.
+function safeUrl(url) {
+  return /^https?:\/\//i.test(url || '') ? url : null;
 }
 
 const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-400 text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-60';
@@ -23,12 +30,34 @@ function QualificationModal({ isOpen, onClose, onSuccess, entry }) {
     description: entry?.description || '',
     is_current: entry?.is_current || false,
   });
+  const [documentUrl, setDocumentUrl] = useState(entry?.document_url || '');
+  const [file, setFile] = useState(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const fileInputRef = useRef(null);
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  }
+
+  function handleFile(f) {
+    const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+    if (f && allowed.includes(f.type)) {
+      setFile(f);
+      setError('');
+    } else if (f) {
+      setError('Please upload a PDF, JPG, PNG, or WEBP file.');
+    }
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setDragOver(false);
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
   }
 
   async function handleSubmit(e) {
@@ -40,11 +69,25 @@ function QualificationModal({ isOpen, onClose, onSuccess, entry }) {
 
     setLoading(true);
     try {
+      let finalDocumentUrl = documentUrl;
+      if (file) {
+        setUploading(true);
+        try {
+          const fd = new FormData();
+          fd.append('file', file);
+          const uploadRes = await uploadFile('/uploads', fd);
+          finalDocumentUrl = uploadRes.url;
+        } finally {
+          setUploading(false);
+        }
+      }
+
       const payload = {
         institution_name: form.institution_name.trim(),
         qualification: form.qualification.trim(),
         start_date: form.start_date,
         is_current: form.is_current,
+        document_url: finalDocumentUrl || null,
       };
       if (form.end_date && !form.is_current) payload.end_date = form.end_date;
       if (form.location.trim()) payload.location = form.location.trim();
@@ -148,6 +191,73 @@ function QualificationModal({ isOpen, onClose, onSuccess, entry }) {
               />
             </div>
 
+            {/* Certificate */}
+            <div>
+              <label className={labelClass}>Certificate</label>
+              <p className="text-xs text-gray-400 -mt-1 mb-2">
+                Most programs issue a certificate or diploma on completion — attach a copy so employers can see proof.
+              </p>
+
+              {safeUrl(documentUrl) && !file ? (
+                <div className="flex items-center justify-between gap-3 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+                  <a
+                    href={safeUrl(documentUrl)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 text-sm font-medium text-primary-700 hover:text-primary-800 truncate"
+                  >
+                    📄 View current certificate
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setDocumentUrl('')}
+                    className="text-xs font-medium text-red-500 hover:text-red-600 cursor-pointer flex-shrink-0"
+                    disabled={loading}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className={`relative border-2 border-dashed rounded-xl p-5 text-center transition-colors cursor-pointer ${
+                    dragOver ? 'border-primary-400 bg-primary-50' : 'border-gray-200 hover:border-gray-300 bg-gray-50'
+                  }`}
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp"
+                    className="hidden"
+                    onChange={(e) => handleFile(e.target.files[0])}
+                    disabled={loading}
+                  />
+                  {file ? (
+                    <div className="flex items-center justify-center gap-2 text-sm">
+                      <span className="text-xl">📄</span>
+                      <span className="font-medium text-gray-700 truncate">{file.name}</span>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setFile(null); }}
+                        className="ml-1 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="text-2xl mb-2">🎓</div>
+                      <p className="text-sm text-gray-600 font-medium">Click to upload or drag &amp; drop</p>
+                      <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG, WEBP accepted — optional</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 type="button" onClick={onClose} disabled={loading}
@@ -162,7 +272,7 @@ function QualificationModal({ isOpen, onClose, onSuccess, entry }) {
                 {loading ? (
                   <>
                     <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Saving…
+                    {uploading ? 'Uploading certificate…' : 'Saving…'}
                   </>
                 ) : isEdit ? 'Save Changes' : 'Add Qualification'}
               </button>
@@ -338,6 +448,26 @@ export default function EducationPage() {
                       </p>
                     )}
 
+                    {safeUrl(entry.document_url) ? (
+                      <a
+                        href={safeUrl(entry.document_url)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`inline-flex items-center gap-1.5 text-xs font-medium text-primary-700 hover:text-primary-800 mt-3 ${entry.description ? '' : 'pt-3 border-t border-gray-100'}`}
+                      >
+                        📄 View certificate
+                      </a>
+                    ) : (
+                      !entry.verified && (
+                        <p className={`text-xs text-gray-400 mt-3 ${entry.description ? '' : 'pt-3 border-t border-gray-100'}`}>
+                          No certificate attached —{' '}
+                          <button onClick={() => setEditEntry(entry)} className="underline hover:text-gray-600 cursor-pointer">
+                            add one
+                          </button>
+                        </p>
+                      )
+                    )}
+
                     {entry.verified && (
                       <p className="text-xs text-gray-400 italic mt-2">
                         This entry has been verified and cannot be edited.
@@ -351,11 +481,13 @@ export default function EducationPage() {
         </div>
       )}
 
-      <QualificationModal
-        isOpen={addOpen}
-        onClose={() => setAddOpen(false)}
-        onSuccess={() => mutate()}
-      />
+      {addOpen && (
+        <QualificationModal
+          isOpen={addOpen}
+          onClose={() => setAddOpen(false)}
+          onSuccess={() => mutate()}
+        />
+      )}
 
       {editEntry && (
         <QualificationModal
