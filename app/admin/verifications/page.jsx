@@ -127,7 +127,7 @@ export default function AdminVerificationsPage() {
                 <th>Entry</th>
                 <th>{activeTab === 'credentials' ? 'Issuer' : 'Location'}</th>
                 <th>Submitted</th>
-                {activeTab === 'credentials' && <th>Requested</th>}
+                <th>Requested</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -147,11 +147,9 @@ export default function AdminVerificationsPage() {
                     <td style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>
                       {formatDate(entry.created_at)}
                     </td>
-                    {activeTab === 'credentials' && (
-                      <td style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>
-                        {entry.verification_requested_at ? formatDate(entry.verification_requested_at) : '—'}
-                      </td>
-                    )}
+                    <td style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>
+                      {entry.verification_requested_at ? formatDate(entry.verification_requested_at) : '—'}
+                    </td>
                     <td>
                       <button
                         className="btn btn-secondary btn-sm"

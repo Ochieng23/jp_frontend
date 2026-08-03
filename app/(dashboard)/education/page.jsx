@@ -326,6 +326,7 @@ export default function EducationPage() {
   const [editEntry, setEditEntry] = useState(null);
   const [deleteEntry, setDeleteEntry] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [requestingVerificationId, setRequestingVerificationId] = useState(null);
 
   async function handleDelete() {
     if (!deleteEntry) return;
@@ -338,6 +339,18 @@ export default function EducationPage() {
       alert('Failed to delete: ' + (err.message || 'Unknown error'));
     } finally {
       setDeleteLoading(false);
+    }
+  }
+
+  async function handleRequestVerification(id) {
+    setRequestingVerificationId(id);
+    try {
+      await post(`/education/${id}/request-verification`, {});
+      mutate();
+    } catch (err) {
+      alert('Failed to request verification: ' + (err.message || 'Unknown error'));
+    } finally {
+      setRequestingVerificationId(null);
     }
   }
 
@@ -472,6 +485,22 @@ export default function EducationPage() {
                       <p className="text-xs text-gray-400 italic mt-2">
                         This entry has been verified and cannot be edited.
                       </p>
+                    )}
+
+                    {!entry.verified && (
+                      entry.verification_requested_at ? (
+                        <p className="text-xs text-gray-400 italic mt-2">
+                          Verification requested — an admin will review this shortly.
+                        </p>
+                      ) : (
+                        <button
+                          onClick={() => handleRequestVerification(id)}
+                          disabled={requestingVerificationId === id}
+                          className="text-xs font-medium text-primary-600 hover:text-primary-700 mt-2 cursor-pointer disabled:opacity-60"
+                        >
+                          {requestingVerificationId === id ? 'Requesting…' : 'Request Verification'}
+                        </button>
+                      )
                     )}
                   </div>
                 </div>
