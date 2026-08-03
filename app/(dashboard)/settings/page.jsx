@@ -5,6 +5,7 @@ import { useUser } from '../../../lib/hooks';
 import { patch, uploadFile } from '../../../lib/api';
 import useAuthStore from '../../../lib/store/authStore';
 import { INDUSTRIES } from '../../../lib/industries';
+import ProfileCompletion from '../../../components/ProfileCompletion';
 
 // avatar_key/intro_video_url are API-settable and rendered straight into
 // src= — the backend restricts scheme at write time, but this guards
@@ -311,6 +312,10 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
         <p className="text-sm text-gray-500 mt-0.5">Manage your profile and account details</p>
       </div>
+
+      {user?.profile_completion && (
+        <ProfileCompletion percentage={user.profile_completion.percentage} compact />
+      )}
 
       <form onSubmit={handleSave} noValidate className="space-y-6">
         {/* ── Profile photo ─────────────────────────────────── */}

@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { useUser, useCredentials } from '../../../lib/hooks';
 import ShareLinkDialog from '../../../components/ShareLinkDialog';
+import ProfileCompletion from '../../../components/ProfileCompletion';
 import { post, patch, uploadFile } from '../../../lib/api';
 
 // avatar_key/intro_video_url are API-settable and rendered straight into
@@ -179,6 +180,14 @@ export default function PassportPage() {
           🔗 Share Passport
         </button>
       </div>
+
+      {/* Profile completion */}
+      {user?.profile_completion && (
+        <ProfileCompletion
+          percentage={user.profile_completion.percentage}
+          items={user.profile_completion.items}
+        />
+      )}
 
       {/* Email verification banner */}
       {user && !user.email_verified && (
