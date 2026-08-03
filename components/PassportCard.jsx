@@ -259,6 +259,54 @@ export default function PassportCard({ user, hasActiveCredential }) {
           </div>
         )}
       </div>
+
+      {(user.open_to_any_industry || (user.industries && user.industries.length > 0)) && (
+        <div
+          style={{
+            marginTop: 16,
+            paddingTop: 16,
+            borderTop: '1px solid rgba(255,255,255,0.15)',
+            position: 'relative',
+          }}
+        >
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Industries
+          </div>
+          {user.open_to_any_industry ? (
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                padding: '4px 12px',
+                borderRadius: 999,
+                background: 'rgba(255,255,255,0.15)',
+                color: '#fff',
+              }}
+            >
+              Open to any industry
+            </span>
+          ) : (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {user.industries.map((industry) => (
+                <span
+                  key={industry}
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    padding: '4px 12px',
+                    borderRadius: 999,
+                    background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    color: 'rgba(255,255,255,0.85)',
+                  }}
+                >
+                  {industry}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

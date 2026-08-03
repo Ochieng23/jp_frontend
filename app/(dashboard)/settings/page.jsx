@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useUser } from '../../../lib/hooks';
 import { patch, uploadFile } from '../../../lib/api';
 import useAuthStore from '../../../lib/store/authStore';
+import { INDUSTRIES } from '../../../lib/industries';
 
 // avatar_key/intro_video_url are API-settable and rendered straight into
 // src= — the backend restricts scheme at write time, but this guards
@@ -87,6 +88,8 @@ export default function SettingsPage() {
         nationality: user.nationality || '',
         date_of_birth: dob,
         phone: user.phone || '',
+        industries: user.industries || [],
+        open_to_any_industry: user.open_to_any_industry || false,
       });
     }
   }, [user, form]);
@@ -95,6 +98,26 @@ export default function SettingsPage() {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
+    setSaved(false);
+  }
+
+  function toggleIndustry(industry) {
+    setForm((prev) => {
+      const current = prev.industries || [];
+      const next = current.includes(industry)
+        ? current.filter((i) => i !== industry)
+        : [...current, industry];
+      return { ...prev, industries: next, open_to_any_industry: next.length > 0 ? false : prev.open_to_any_industry };
+    });
+    setSaved(false);
+  }
+
+  function toggleOpenToAnyIndustry() {
+    setForm((prev) => ({
+      ...prev,
+      open_to_any_industry: !prev.open_to_any_industry,
+      industries: !prev.open_to_any_industry ? [] : prev.industries,
+    }));
     setSaved(false);
   }
 
@@ -128,6 +151,8 @@ export default function SettingsPage() {
       };
       if (form.nationality) payload.nationality = form.nationality;
       if (form.date_of_birth) payload.date_of_birth = form.date_of_birth;
+      payload.open_to_any_industry = form.open_to_any_industry;
+      payload.industries = form.open_to_any_industry ? [] : form.industries;
 
       const result = await patch('/passport/me', payload);
       mutate({ data: result.data }, false);
@@ -477,6 +502,40 @@ export default function SettingsPage() {
               />
             </Field>
           </div>
+
+          <Field label="Industries" hint="(optional — which industries are you targeting?)">
+            <label className="flex items-center gap-2 mb-3 text-sm text-gray-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.open_to_any_industry}
+                onChange={toggleOpenToAnyIndustry}
+                disabled={saving}
+                className="rounded border-gray-300"
+              />
+              Open to any industry
+            </label>
+            <div
+              className={`flex flex-wrap gap-2 ${form.open_to_any_industry ? 'opacity-40 pointer-events-none' : ''}`}
+            >
+              {INDUSTRIES.map((industry) => {
+                const selected = form.industries.includes(industry);
+                return (
+                  <button
+                    key={industry}
+                    type="button"
+                    onClick={() => toggleIndustry(industry)}
+                    disabled={saving || form.open_to_any_industry}
+                    className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-colors cursor-pointer
+                      ${selected
+                        ? 'bg-primary-600 border-primary-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    {industry}
+                  </button>
+                );
+              })}
+            </div>
+          </Field>
         </section>
 
         {/* ── Contact & identity ─────────────────────────────── */}

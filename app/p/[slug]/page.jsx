@@ -342,6 +342,29 @@ export default function PublicPassportPage() {
                 </div>
               )}
 
+              {/* Industries */}
+              {(holder?.open_to_any_industry || (holder?.industries && holder.industries.length > 0)) && (
+                <div className="relative mt-5 pt-5 border-t border-white/20">
+                  <p className="text-primary-300 text-xs uppercase tracking-wide mb-2">Industries</p>
+                  {holder.open_to_any_industry ? (
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold bg-white/15 text-white px-3 py-1.5 rounded-full">
+                      Open to any industry
+                    </span>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {holder.industries.map((industry) => (
+                        <span
+                          key={industry}
+                          className="text-xs font-medium px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-primary-50"
+                        >
+                          {industry}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Stats strip */}
               <div className="relative mt-4 pt-4 border-t border-white/20 flex gap-5 text-sm">
                 <div>

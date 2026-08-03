@@ -299,6 +299,32 @@ export default function PassportPage() {
         </div>
       )}
 
+      {/* Industry preferences */}
+      {(user?.open_to_any_industry || (user?.industries && user.industries.length > 0)) && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-semibold text-gray-900">Industries</h2>
+            <Link href="/settings" className="text-sm font-medium text-primary-600 hover:text-primary-700">Manage</Link>
+          </div>
+          {user.open_to_any_industry ? (
+            <span className="inline-flex items-center gap-1 text-xs font-semibold bg-green-100 text-green-700 px-3 py-1.5 rounded-full">
+              Open to any industry
+            </span>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {user.industries.map((industry) => (
+                <span
+                  key={industry}
+                  className="text-xs font-medium px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-gray-700"
+                >
+                  {industry}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {shareOpen && (
         <ShareLinkDialog
           isOpen={shareOpen}
