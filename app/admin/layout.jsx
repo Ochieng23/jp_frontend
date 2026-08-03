@@ -11,10 +11,5 @@ export default async function AdminLayout({ children }) {
     redirect('/passport');
   }
 
-  return (
-    <div className="dashboard-layout">
-      <AdminNav />
-      <main className="dashboard-main">{children}</main>
-    </div>
-  );
+  return <AdminNav>{children}</AdminNav>;
 }
