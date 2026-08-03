@@ -196,7 +196,6 @@ export default function PublicPassportPage() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
   const [expired, setExpired] = useState(false);
-  const [pdfLoading, setPdfLoading] = useState(false);
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   useEffect(() => {
@@ -212,31 +211,6 @@ export default function PublicPassportPage() {
       .catch(() => setErrorMsg('Unable to load. Please check your connection.'))
       .finally(() => setLoading(false));
   }, [slug]);
-
-  async function handleDownloadPDF() {
-    if (!data) return;
-    setPdfLoading(true);
-    try {
-      // Dynamic import keeps @react-pdf/renderer out of the SSR bundle
-      const [{ pdf }, { default: PassportPDF }] = await Promise.all([
-        import('@react-pdf/renderer'),
-        import('./PassportPDF'),
-      ]);
-      const blob = await pdf(
-        PassportPDF({ holder: data.holder, credentials: data.credentials, pageUrl })
-      ).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${(data.holder?.full_name || 'passport').replace(/\s+/g, '_')}_passport.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('PDF generation failed', err);
-    } finally {
-      setPdfLoading(false);
-    }
-  }
 
   const holder = data?.holder;
   const credentials = data?.credentials || [];
@@ -317,22 +291,6 @@ export default function PublicPassportPage() {
                     <span className="text-primary-200 text-sm">{holder?.nationality || '—'}</span>
                   </div>
                 </div>
-
-                {/* Download PDF */}
-                <button
-                  onClick={handleDownloadPDF}
-                  disabled={pdfLoading}
-                  className="flex-shrink-0 flex items-center gap-1.5 bg-white/15 hover:bg-white/25 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-colors disabled:opacity-60 cursor-pointer"
-                >
-                  {pdfLoading ? (
-                    <span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                    </svg>
-                  )}
-                  Download PDF
-                </button>
               </div>
 
               {/* Bio */}
