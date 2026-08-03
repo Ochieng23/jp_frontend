@@ -167,6 +167,16 @@ function WorkCard({ work }) {
           {dateRange && (
             <p className="text-xs text-gray-400 mt-1.5">{dateRange}</p>
           )}
+          {safeUrl(work.document_url) && (
+            <a
+              href={safeUrl(work.document_url)}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-medium text-primary-700 hover:text-primary-800 mt-2"
+            >
+              📄 View document
+            </a>
+          )}
         </div>
       </div>
     </div>
