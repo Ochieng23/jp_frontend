@@ -62,23 +62,34 @@ export default function DashboardShell({ children }) {
 
         {/* Nav links */}
         <div className="flex-1 py-3 overflow-y-auto">
-          {NAV_LINKS.map((link) => {
-            const active = pathname === link.href || pathname.startsWith(link.href + '/');
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors no-underline mx-2 rounded-lg mb-0.5 ${
-                  active
-                    ? 'bg-primary-600 text-white'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              >
-                <span className="text-base">{link.icon}</span>
-                {link.label}
-              </Link>
-            );
-          })}
+          {(() => {
+            // Pick the single most specific (longest) matching href, so a
+            // link isn't highlighted merely because another link's href is
+            // a literal path prefix of it — e.g. '/jobs' is a prefix of
+            // '/jobs/applications', which used to light up both at once.
+            const activeHref = NAV_LINKS
+              .map((l) => l.href)
+              .filter((href) => pathname === href || pathname.startsWith(href + '/'))
+              .sort((a, b) => b.length - a.length)[0];
+
+            return NAV_LINKS.map((link) => {
+              const active = link.href === activeHref;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors no-underline mx-2 rounded-lg mb-0.5 ${
+                    active
+                      ? 'bg-primary-600 text-white'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  <span className="text-base">{link.icon}</span>
+                  {link.label}
+                </Link>
+              );
+            });
+          })()}
         </div>
 
         {/* Footer / user */}
