@@ -308,11 +308,13 @@ export default function AdminOrganizationsPage() {
         </div>
       )}
 
-      <RegisterOrgModal
-        isOpen={addOpen}
-        onClose={() => setAddOpen(false)}
-        onSuccess={() => mutate()}
-      />
+      {addOpen && (
+        <RegisterOrgModal
+          isOpen={addOpen}
+          onClose={() => setAddOpen(false)}
+          onSuccess={() => mutate()}
+        />
+      )}
     </div>
   );
 }

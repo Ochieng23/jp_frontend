@@ -6,6 +6,17 @@ import { useUser, useCredentials } from '../../../lib/hooks';
 import ShareLinkDialog from '../../../components/ShareLinkDialog';
 import { post, patch, uploadFile } from '../../../lib/api';
 
+// avatar_key/intro_video_url are API-settable and rendered straight into
+// src= — the backend restricts scheme at write time, but this guards
+// existing rows and any other client. avatar_key additionally allows a
+// base64 image data URI (the no-Azure-storage fallback).
+function safeImageUrl(url) {
+  return /^(https?:\/\/|data:image\/(png|jpe?g|gif|webp);base64,)/i.test(url || '') ? url : null;
+}
+function safeUrl(url) {
+  return /^https?:\/\//i.test(url || '') ? url : null;
+}
+
 function StatCard({ label, value, icon, color, valueColor }) {
   return (
     // min-w-0 at both levels lets the card shrink below the label's
@@ -180,9 +191,9 @@ export default function PassportPage() {
               title="Upload profile photo"
               className="relative w-16 h-16 rounded-2xl flex-shrink-0 group focus:outline-none focus:ring-2 focus:ring-white/60 disabled:cursor-not-allowed"
             >
-              {user?.avatar_key ? (
+              {safeImageUrl(user?.avatar_key) ? (
                 <img
-                  src={user.avatar_key}
+                  src={safeImageUrl(user.avatar_key)}
                   alt={user.full_name || 'Avatar'}
                   className="w-full h-full rounded-2xl object-cover border-2 border-white/30"
                   onError={(e) => { e.target.style.display = 'none'; }}
@@ -272,7 +283,7 @@ export default function PassportPage() {
       )}
 
       {/* Introduction video */}
-      {user?.intro_video_url && (
+      {safeUrl(user?.intro_video_url) && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold text-gray-900">Introduction video</h2>
@@ -280,7 +291,7 @@ export default function PassportPage() {
           </div>
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
-            src={user.intro_video_url}
+            src={safeUrl(user.intro_video_url)}
             controls
             preload="metadata"
             className="w-full max-w-xl aspect-video object-contain rounded-xl border border-gray-200 bg-black"

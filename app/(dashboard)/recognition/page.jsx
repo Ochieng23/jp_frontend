@@ -237,11 +237,13 @@ export default function RecognitionPage() {
         <RecognitionMatrix matrix={matrix} />
       )}
 
-      <EvaluateModal
-        isOpen={evalOpen}
-        onClose={() => { setEvalOpen(false); mutate(); }}
-        holderId={holderId}
-      />
+      {evalOpen && (
+        <EvaluateModal
+          isOpen={evalOpen}
+          onClose={() => { setEvalOpen(false); mutate(); }}
+          holderId={holderId}
+        />
+      )}
     </div>
   );
 }

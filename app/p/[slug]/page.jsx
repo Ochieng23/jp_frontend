@@ -57,6 +57,13 @@ function safeUrl(url) {
   return /^https?:\/\//i.test(url || '') ? url : null;
 }
 
+// avatar_key additionally supports a base64 image data URI (the
+// no-Azure-storage fallback) — same http(s)-only guard as safeUrl, plus
+// that one extra allowed prefix.
+function safeImageUrl(url) {
+  return /^(https?:\/\/|data:image\/(png|jpe?g|gif|webp);base64,)/i.test(url || '') ? url : null;
+}
+
 function isVerified(cred) {
   return cred.proof_value && cred.proof_value !== 'PENDING_VERIFICATION';
 }
@@ -292,8 +299,8 @@ export default function PublicPassportPage() {
               <div className="relative flex items-center gap-5">
                 {/* Avatar */}
                 <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-white/30 flex-shrink-0">
-                  {holder?.avatar_key ? (
-                    <img src={holder.avatar_key} alt={holder.full_name} className="w-full h-full object-cover" />
+                  {safeImageUrl(holder?.avatar_key) ? (
+                    <img src={safeImageUrl(holder.avatar_key)} alt={holder.full_name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-white/20 flex items-center justify-center text-2xl font-bold">
                       {initials}
@@ -378,12 +385,12 @@ export default function PublicPassportPage() {
             )}
 
             {/* Introduction video */}
-            {holder?.intro_video_url && (
+            {safeUrl(holder?.intro_video_url) && (
               <section>
                 <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-3">Introduction</h2>
                 {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                 <video
-                  src={holder.intro_video_url}
+                  src={safeUrl(holder.intro_video_url)}
                   controls
                   preload="metadata"
                   className="w-full max-w-xl aspect-video object-contain rounded-xl border border-gray-200 bg-black"

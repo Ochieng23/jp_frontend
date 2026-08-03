@@ -30,6 +30,15 @@ function getFlag(nationality) {
   return FLAG_MAP[nationality] || '🌍';
 }
 
+// avatar_url/avatar_key are API-settable and rendered straight into
+// src= on a page anyone with a share link can view — the backend
+// restricts scheme at write time, but this guards existing rows and any
+// other client. Also allows a base64 image data URI (the no-Azure-storage
+// fallback).
+function safeImageUrl(url) {
+  return /^(https?:\/\/|data:image\/(png|jpe?g|gif|webp);base64,)/i.test(url || '') ? url : null;
+}
+
 function VerifiedSeal() {
   return (
     <svg
@@ -85,7 +94,7 @@ export default function PassportCard({ user, hasActiveCredential }) {
     );
   }
 
-  const avatarSrc = user.avatar_url || user.avatar_key || '/placeholder-avatar.svg';
+  const avatarSrc = safeImageUrl(user.avatar_url) || safeImageUrl(user.avatar_key) || '/placeholder-avatar.svg';
   const flag = getFlag(user.nationality);
 
   return (

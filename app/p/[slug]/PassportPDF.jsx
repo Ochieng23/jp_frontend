@@ -94,6 +94,12 @@ function fmtDate(d) {
   return new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'short' }).format(new Date(d));
 }
 
+// avatar_key is API-settable; this component only ever passes the
+// non-data:-URI branch to <Image>, so it just needs the http(s) guard.
+function safeUrl(url) {
+  return /^https?:\/\//i.test(url || '') ? url : null;
+}
+
 export default function PassportPDF({ holder, credentials = [], pageUrl = '' }) {
   const initials = holder?.full_name
     ? holder.full_name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
@@ -123,8 +129,8 @@ export default function PassportPDF({ holder, credentials = [], pageUrl = '' }) 
         {/* Profile card */}
         <View style={styles.profileCard}>
           <View style={styles.profileRow}>
-            {holder?.avatar_key && !holder.avatar_key.startsWith('data:') ? (
-              <Image src={holder.avatar_key} style={styles.avatar} />
+            {safeUrl(holder?.avatar_key) ? (
+              <Image src={safeUrl(holder.avatar_key)} style={styles.avatar} />
             ) : (
               <View style={styles.avatarInitials}>
                 <Text style={styles.avatarText}>{initials}</Text>

@@ -321,11 +321,13 @@ export default function AdminJurisdictionsPage() {
         </div>
       )}
 
-      <AddJurisdictionModal
-        isOpen={addOpen}
-        onClose={() => setAddOpen(false)}
-        onSuccess={() => mutate()}
-      />
+      {addOpen && (
+        <AddJurisdictionModal
+          isOpen={addOpen}
+          onClose={() => setAddOpen(false)}
+          onSuccess={() => mutate()}
+        />
+      )}
 
       {editJurisdiction && (
         <EditRulesModal

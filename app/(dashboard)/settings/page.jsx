@@ -5,6 +5,17 @@ import { useUser } from '../../../lib/hooks';
 import { patch, uploadFile } from '../../../lib/api';
 import useAuthStore from '../../../lib/store/authStore';
 
+// avatar_key/intro_video_url are API-settable and rendered straight into
+// src= — the backend restricts scheme at write time, but this guards
+// existing rows and any other client. avatar_key additionally allows a
+// base64 image data URI (the no-Azure-storage fallback).
+function safeImageUrl(url) {
+  return /^(https?:\/\/|data:image\/(png|jpe?g|gif|webp);base64,)/i.test(url || '') ? url : null;
+}
+function safeUrl(url) {
+  return /^https?:\/\//i.test(url || '') ? url : null;
+}
+
 const NATIONALITIES = [
   'Afghan','Albanian','Algerian','American','Argentine','Armenian','Australian',
   'Austrian','Azerbaijani','Bahraini','Bangladeshi','Belarusian','Belgian',
@@ -250,9 +261,12 @@ export default function SettingsPage() {
     }
   }
 
-  const videoSrc = videoPreview || user?.intro_video_url || null;
+  // videoPreview/avatarPreview are local blob: URLs (browser-generated,
+  // always safe) and take priority; only the API-sourced fallback needs
+  // the scheme guard.
+  const videoSrc = videoPreview || safeUrl(user?.intro_video_url) || null;
 
-  const avatarSrc = avatarPreview || user?.avatar_key || null;
+  const avatarSrc = avatarPreview || safeImageUrl(user?.avatar_key) || null;
   const initials = user?.full_name
     ? user.full_name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
     : '?';
