@@ -1,10 +1,14 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { useCredential } from '../../../../lib/hooks';
+import { useState, useEffect, useRef } from 'react';
+import { useCredential, useOrganizations } from '../../../../lib/hooks';
 import VerificationStatus from '../../../../components/VerificationStatus';
-import { get } from '../../../../lib/api';
+import { get, patch, del, uploadFile } from '../../../../lib/api';
+
+const ADDABLE_TYPES = ['certification', 'skill', 'reference', 'license', 'identity'];
+const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-400 text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-60';
+const labelClass = 'block text-sm font-medium text-gray-700 mb-1.5';
 
 function formatDate(dateStr) {
   if (!dateStr) return 'N/A';
@@ -62,6 +66,227 @@ function LoadingPDF() {
       <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }} />
       Generating PDF…
     </span>
+  );
+}
+
+// Only self-reported credentials are editable — a real signed VC's fields
+// can't be edited without desyncing them from the cryptographic vc_json.
+function EditCredentialModal({ credential, onClose, onSuccess }) {
+  const { organizations } = useOrganizations();
+  const [form, setForm] = useState({
+    title: credential.title || '',
+    type: credential.type || 'certification',
+    issuer: credential.issuer?.name || credential.issuer_name || '',
+    issued_at: credential.issued_at ? credential.issued_at.split('T')[0] : '',
+    expires_at: credential.expires_at ? credential.expires_at.split('T')[0] : '',
+    description: credential.description || '',
+  });
+  const [documentUrl, setDocumentUrl] = useState(credential.document_url || '');
+  const [file, setFile] = useState(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const fileInputRef = useRef(null);
+
+  function handleChange(e) {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  function handleFile(f) {
+    const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+    if (f && allowed.includes(f.type)) {
+      setFile(f);
+      setError('');
+    } else if (f) {
+      setError('Please upload a PDF, JPG, PNG, or WEBP file.');
+    }
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setDragOver(false);
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError('');
+    if (!form.title.trim()) { setError('Title is required'); return; }
+    if (!form.issuer.trim()) { setError('Please say who issued this credential'); return; }
+    if (!form.issued_at) { setError('Issue date is required'); return; }
+
+    setLoading(true);
+    try {
+      let finalDocumentUrl = documentUrl;
+      if (file) {
+        const fd = new FormData();
+        fd.append('file', file);
+        const uploadRes = await uploadFile('/uploads', fd);
+        finalDocumentUrl = uploadRes.url;
+      }
+
+      const payload = {
+        title: form.title.trim(),
+        type: form.type,
+        issued_at: form.issued_at,
+        document_url: finalDocumentUrl || null,
+      };
+      const matchedOrg = organizations.find(
+        (org) => org.name.trim().toLowerCase() === form.issuer.trim().toLowerCase()
+      );
+      if (matchedOrg) { payload.issuer_id = matchedOrg._id || matchedOrg.id; payload.issuer_name = null; }
+      else { payload.issuer_name = form.issuer.trim(); payload.issuer_id = null; }
+
+      payload.expires_at = form.expires_at || null;
+      payload.description = form.description.trim() || null;
+
+      await patch(`/credentials/${credential._id || credential.id}`, payload);
+      onSuccess();
+      onClose();
+    } catch (err) {
+      setError(err.message || 'Failed to save changes');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      onClick={(e) => e.target === e.currentTarget && !loading && onClose()}
+    >
+      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 rounded-t-2xl flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">Edit Credential</h2>
+          <button onClick={onClose} disabled={loading} className="text-gray-400 hover:text-gray-600 transition-colors text-xl leading-none cursor-pointer disabled:opacity-50">✕</button>
+        </div>
+
+        <div className="px-6 py-5">
+          {error && (
+            <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className={labelClass}>Title <span className="text-red-500">*</span></label>
+              <input name="title" className={inputClass} value={form.title} onChange={handleChange} disabled={loading} />
+            </div>
+
+            <div>
+              <label className={labelClass}>Type <span className="text-red-500">*</span></label>
+              <select name="type" className={inputClass} value={form.type} onChange={handleChange} disabled={loading}>
+                {ADDABLE_TYPES.map((t) => (
+                  <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className={labelClass}>Issued by <span className="text-red-500">*</span></label>
+              <input
+                name="issuer" list="edit-issuer-suggestions" className={inputClass} value={form.issuer}
+                onChange={handleChange} disabled={loading}
+              />
+              <datalist id="edit-issuer-suggestions">
+                {organizations.map((org) => (
+                  <option key={org._id || org.id} value={org.name} />
+                ))}
+              </datalist>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>Issue Date <span className="text-red-500">*</span></label>
+                <input
+                  name="issued_at" type="date" className={inputClass}
+                  value={form.issued_at} onChange={handleChange}
+                  disabled={loading} max={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Expiry Date</label>
+                <input name="expires_at" type="date" className={inputClass} value={form.expires_at} onChange={handleChange} disabled={loading} />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Description</label>
+              <textarea name="description" className={inputClass} value={form.description} onChange={handleChange} disabled={loading} rows={3} />
+            </div>
+
+            <div>
+              <label className={labelClass}>Supporting Document</label>
+              {documentUrl && !file ? (
+                <div className="flex items-center justify-between gap-3 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+                  <a href={documentUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm font-medium text-primary-700 hover:text-primary-800 truncate">
+                    📄 View current document
+                  </a>
+                  <button type="button" onClick={() => setDocumentUrl('')} className="text-xs font-medium text-red-500 hover:text-red-600 cursor-pointer flex-shrink-0" disabled={loading}>
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className={`relative border-2 border-dashed rounded-xl p-5 text-center transition-colors cursor-pointer ${dragOver ? 'border-primary-400 bg-primary-50' : 'border-gray-200 hover:border-gray-300 bg-gray-50'}`}
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden" onChange={(e) => handleFile(e.target.files[0])} disabled={loading} />
+                  {file ? (
+                    <div className="flex items-center justify-center gap-2 text-sm">
+                      <span className="text-xl">📄</span>
+                      <span className="font-medium text-gray-700 truncate">{file.name}</span>
+                      <button type="button" onClick={(e) => { e.stopPropagation(); setFile(null); }} className="ml-1 text-gray-400 hover:text-red-500 transition-colors cursor-pointer">✕</button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="text-2xl mb-2">📎</div>
+                      <p className="text-sm text-gray-600 font-medium">Click to upload or drag &amp; drop</p>
+                      <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG, WEBP accepted</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button type="button" onClick={onClose} disabled={loading} className="px-4 py-2.5 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-60 cursor-pointer">
+                Cancel
+              </button>
+              <button type="submit" disabled={loading} className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-60 cursor-pointer">
+                {loading ? (<><span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Saving…</>) : 'Save Changes'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ConfirmDeleteCredentialModal({ credential, onClose, onConfirm, loading }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={(e) => e.target === e.currentTarget && !loading && onClose()}>
+      <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">Delete Credential</h2>
+        <p className="text-sm text-gray-500 mb-6">
+          Are you sure you want to delete &quot;{credential.title}&quot;? This action cannot be undone.
+        </p>
+        <div className="flex items-center justify-end gap-3">
+          <button onClick={onClose} disabled={loading} className="px-4 py-2.5 text-sm font-medium text-gray-700 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-60 cursor-pointer">
+            Cancel
+          </button>
+          <button onClick={onConfirm} disabled={loading} className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-60 cursor-pointer">
+            {loading ? (<><span className="inline-block w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Deleting…</>) : 'Delete'}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -260,11 +485,27 @@ async function generateAndDownloadPDF(credential) {
 export default function CredentialDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const { credential, isLoading, error } = useCredential(id);
+  const { credential, isLoading, error, mutate } = useCredential(id);
   const [verification, setVerification] = useState(null);
   const [verifying, setVerifying] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [showRaw, setShowRaw] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  async function handleDelete() {
+    setDeleteLoading(true);
+    setDeleteError('');
+    try {
+      await del(`/credentials/${id}`);
+      router.push('/credentials');
+    } catch (err) {
+      setDeleteError(err.message || 'Failed to delete credential');
+      setDeleteLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (id) {
@@ -324,6 +565,7 @@ export default function CredentialDetailPage() {
   }
 
   const expired = isExpired(credential.expires_at);
+  const isSelfReported = credential.proof_value === 'self-reported';
 
   return (
     <div className="page-container">
@@ -383,14 +625,41 @@ export default function CredentialDetailPage() {
             )}
           </div>
         </div>
-        <button
-          className="btn btn-secondary"
-          onClick={handleDownloadPDF}
-          disabled={pdfLoading}
-        >
-          {pdfLoading ? <LoadingPDF /> : 'Download PDF Certificate'}
-        </button>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {isSelfReported ? (
+            <button className="btn btn-secondary" onClick={() => setEditOpen(true)}>
+              Edit
+            </button>
+          ) : (
+            <span
+              title="Issued by a verified organisation — edit the entry via Work History/Education instead, or contact the issuer"
+              style={{ fontSize: 12, color: 'var(--color-text-muted)', alignSelf: 'center' }}
+            >
+              Issued by {credential.issuer?.name || 'a verified organisation'} — cannot be edited
+            </span>
+          )}
+          <button
+            className="btn"
+            onClick={() => setDeleteOpen(true)}
+            style={{ background: '#fde8e8', color: '#e02424', border: '1px solid #f8b4b4' }}
+          >
+            Delete
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={handleDownloadPDF}
+            disabled={pdfLoading}
+          >
+            {pdfLoading ? <LoadingPDF /> : 'Download PDF Certificate'}
+          </button>
+        </div>
       </div>
+
+      {deleteError && (
+        <div className="alert alert-error" style={{ marginBottom: 16 }}>
+          {deleteError}
+        </div>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-2">
         {/* Left column */}
@@ -548,6 +817,26 @@ export default function CredentialDetailPage() {
           </div>
         </div>
       </div>
+
+      {editOpen && (
+        <EditCredentialModal
+          credential={credential}
+          onClose={() => setEditOpen(false)}
+          onSuccess={() => {
+            mutate();
+            setEditOpen(false);
+          }}
+        />
+      )}
+
+      {deleteOpen && (
+        <ConfirmDeleteCredentialModal
+          credential={credential}
+          onClose={() => setDeleteOpen(false)}
+          onConfirm={handleDelete}
+          loading={deleteLoading}
+        />
+      )}
     </div>
   );
 }
