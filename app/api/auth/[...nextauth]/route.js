@@ -141,6 +141,52 @@ export async function POST(request, { params }) {
     return response;
   }
 
+  if (action === 'forgot-password' || action === 'reset-password') {
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+
+    let expressRes;
+    try {
+      expressRes = await fetch(`${EXPRESS_API}/api/auth/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    } catch (err) {
+      return NextResponse.json({ error: 'Backend unreachable', details: err.message }, { status: 502 });
+    }
+
+    const data = await expressRes.json().catch(() => ({}));
+    return NextResponse.json(data, { status: expressRes.status });
+  }
+
+  if (action === 'resend-verification') {
+    const accessToken = cookieStore.get('access_token')?.value;
+    if (!accessToken) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    let expressRes;
+    try {
+      expressRes = await fetch(`${EXPRESS_API}/api/auth/resend-verification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    } catch (err) {
+      return NextResponse.json({ error: 'Backend unreachable', details: err.message }, { status: 502 });
+    }
+
+    const data = await expressRes.json().catch(() => ({}));
+    return NextResponse.json(data, { status: expressRes.status });
+  }
+
   if (action === 'logout') {
     const accessToken = cookieStore.get('access_token')?.value;
     const refreshToken = cookieStore.get('refresh_token')?.value;
@@ -170,6 +216,23 @@ export async function POST(request, { params }) {
 export async function GET(request, { params }) {
   const segments = params.nextauth;
   const action = segments[segments.length - 1];
+
+  if (action === 'verify-email') {
+    const token = new URL(request.url).searchParams.get('token');
+    if (!token) {
+      return NextResponse.json({ error: 'Missing token' }, { status: 400 });
+    }
+
+    let expressRes;
+    try {
+      expressRes = await fetch(`${EXPRESS_API}/api/auth/verify-email?token=${encodeURIComponent(token)}`);
+    } catch (err) {
+      return NextResponse.json({ error: 'Backend unreachable', details: err.message }, { status: 502 });
+    }
+
+    const data = await expressRes.json().catch(() => ({}));
+    return NextResponse.json(data, { status: expressRes.status });
+  }
 
   if (action === 'me') {
     const cookieStore = cookies();

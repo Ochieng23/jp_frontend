@@ -43,7 +43,21 @@ export default function PassportPage() {
   const [shareError, setShareError] = useState('');
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [avatarError, setAvatarError] = useState('');
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSent, setResendSent] = useState(false);
   const fileInputRef = useRef(null);
+
+  async function handleResendVerification() {
+    setResendLoading(true);
+    try {
+      await post('/auth/resend-verification', {});
+      setResendSent(true);
+    } catch (err) {
+      alert(err.message || 'Failed to resend verification email');
+    } finally {
+      setResendLoading(false);
+    }
+  }
 
   async function handleAvatarChange(e) {
     const file = e.target.files?.[0];
@@ -165,6 +179,22 @@ export default function PassportPage() {
           🔗 Share Passport
         </button>
       </div>
+
+      {/* Email verification banner */}
+      {user && !user.email_verified && (
+        <div className="flex items-center justify-between gap-3 flex-wrap bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <p className="text-sm text-amber-800">
+            📧 Please verify your email address — check your inbox for a link from Cazini.
+          </p>
+          <button
+            onClick={handleResendVerification}
+            disabled={resendLoading}
+            className="text-sm font-medium text-amber-800 underline hover:text-amber-900 disabled:opacity-60 cursor-pointer"
+          >
+            {resendLoading ? 'Sending…' : resendSent ? 'Sent!' : 'Resend email'}
+          </button>
+        </div>
+      )}
 
       {/* Passport card */}
       <div className="relative bg-primary-800 rounded-3xl p-8 text-white overflow-hidden shadow-xl shadow-primary-200">
