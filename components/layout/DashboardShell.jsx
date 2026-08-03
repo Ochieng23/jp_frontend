@@ -36,8 +36,6 @@ export default function DashboardShell({ children }) {
     router.push('/login');
   }
 
-  const isAdmin = user?.role === 'platform_admin';
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile overlay */}
@@ -81,26 +79,6 @@ export default function DashboardShell({ children }) {
               </Link>
             );
           })}
-
-          {isAdmin && (
-            <>
-              {/* gray-500 on white = 4.8:1 ✅ AA  (was gray-400 = 2.54:1 ❌) */}
-              <div className="mx-4 mt-4 mb-1 text-xs font-bold uppercase tracking-widest text-gray-500">
-                Admin
-              </div>
-              <Link
-                href="/admin/dashboard"
-                className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors no-underline mx-2 rounded-lg mb-0.5 ${
-                  pathname.startsWith('/admin')
-                    ? 'bg-primary-600 text-white'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              >
-                <span className="text-base">⚙️</span>
-                Admin Panel
-              </Link>
-            </>
-          )}
         </div>
 
         {/* Footer / user */}

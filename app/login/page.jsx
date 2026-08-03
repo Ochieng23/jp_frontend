@@ -37,8 +37,8 @@ export default function LoginPage() {
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setLoading(true);
     try {
-      await login(form.email.trim(), form.password);
-      router.push('/passport');
+      const user = await login(form.email.trim(), form.password);
+      router.push(user.role === 'platform_admin' ? '/admin/dashboard' : '/passport');
     } catch (err) {
       setServerError(err.message || 'Unable to connect. Please try again.');
     } finally {
