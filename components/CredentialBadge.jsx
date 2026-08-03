@@ -87,6 +87,15 @@ export default function CredentialBadge({ credential, readOnly }) {
             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize ${statusCls}`}>
               {status === 'active' ? '✓ Active' : status}
             </span>
+            {credential.verified ? (
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-green-50 text-green-700">
+                ✓ Verified
+              </span>
+            ) : (
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                Not verified
+              </span>
+            )}
             {isExpired && (
               <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-red-50 text-red-600">
                 Expired

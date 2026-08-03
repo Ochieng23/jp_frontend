@@ -8,6 +8,7 @@ import { getUser } from '../../lib/auth';
 const ADMIN_LINKS = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
   { href: '/admin/organizations', label: 'Organisations', icon: '🏢' },
+  { href: '/admin/verifications', label: 'Verifications', icon: '✅' },
   { href: '/admin/jurisdictions', label: 'Jurisdictions', icon: '🌍' },
   { href: '/admin/audit', label: 'Audit Log', icon: '📋' },
 ];

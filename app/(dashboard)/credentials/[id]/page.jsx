@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useCredential, useOrganizations } from '../../../../lib/hooks';
 import VerificationStatus from '../../../../components/VerificationStatus';
-import { get, patch, del, uploadFile } from '../../../../lib/api';
+import { get, post, patch, del, uploadFile } from '../../../../lib/api';
 
 const ADDABLE_TYPES = ['certification', 'skill', 'reference', 'license', 'identity'];
 const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-400 text-sm outline-none transition-colors bg-white text-gray-900 placeholder-gray-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-60';
@@ -494,6 +494,21 @@ export default function CredentialDetailPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+  const [requestingVerification, setRequestingVerification] = useState(false);
+  const [verificationRequestError, setVerificationRequestError] = useState('');
+
+  async function handleRequestVerification() {
+    setRequestingVerification(true);
+    setVerificationRequestError('');
+    try {
+      await post(`/credentials/${id}/request-verification`, {});
+      mutate();
+    } catch (err) {
+      setVerificationRequestError(err.message || 'Failed to request verification');
+    } finally {
+      setRequestingVerification(false);
+    }
+  }
 
   async function handleDelete() {
     setDeleteLoading(true);
@@ -606,6 +621,15 @@ export default function CredentialDetailPage() {
             <span className={`pill pill-${credential.status}`}>
               {credential.status}
             </span>
+            {credential.verified ? (
+              <span className="pill" style={{ background: '#def7ec', color: '#03543e' }}>
+                ✓ Verified
+              </span>
+            ) : (
+              <span className="pill" style={{ background: '#feecdc', color: '#8a5312' }}>
+                Not yet verified
+              </span>
+            )}
             <span
               style={{
                 fontSize: 12,
@@ -638,6 +662,24 @@ export default function CredentialDetailPage() {
               Issued by {credential.issuer?.name || 'a verified organisation'} — cannot be edited
             </span>
           )}
+          {!credential.verified && (
+            credential.verification_requested_at ? (
+              <span
+                title="An admin will review this credential shortly"
+                style={{ fontSize: 12, color: 'var(--color-text-muted)', alignSelf: 'center' }}
+              >
+                Verification requested
+              </span>
+            ) : (
+              <button
+                className="btn btn-secondary"
+                onClick={handleRequestVerification}
+                disabled={requestingVerification}
+              >
+                {requestingVerification ? 'Requesting…' : 'Request Verification'}
+              </button>
+            )
+          )}
           <button
             className="btn"
             onClick={() => setDeleteOpen(true)}
@@ -658,6 +700,12 @@ export default function CredentialDetailPage() {
       {deleteError && (
         <div className="alert alert-error" style={{ marginBottom: 16 }}>
           {deleteError}
+        </div>
+      )}
+
+      {verificationRequestError && (
+        <div className="alert alert-error" style={{ marginBottom: 16 }}>
+          {verificationRequestError}
         </div>
       )}
 
