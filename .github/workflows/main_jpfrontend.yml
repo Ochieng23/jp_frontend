@@ -24,6 +24,12 @@ jobs:
           node-version: '24.x'
 
       - name: npm install, build, and test
+        # API_BACKEND_URL must be present at BUILD time too (not just as an
+        # App Service runtime setting): the sitemap and the ISR-prerendered
+        # /jobs page fetch the backend while `next build` runs — without it
+        # they bake against an unreachable localhost and ship empty.
+        env:
+          API_BACKEND_URL: https://jpbackend-fec7ayfsgqecf6fn.canadacentral-01.azurewebsites.net
         run: |
           npm install
           npm run build --if-present

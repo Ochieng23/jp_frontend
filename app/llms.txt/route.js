@@ -1,4 +1,7 @@
-# Cazini
+// /llms.txt — a plain-text site summary for AI crawlers (Perplexity,
+// ChatGPT, Claude, Google AI). Served from a route handler rather than
+// public/ so it works identically in dev and the standalone Azure bundle.
+const CONTENT = `# Cazini
 
 > Cazini is a Job Passport platform for jobseekers in Kenya and across
 > Africa. Candidates build one verified, portable profile — work history,
@@ -33,3 +36,13 @@
 
 - Email: hello@cazini.ai
 - Company: Cazini Systems Limited, Nairobi, Kenya
+`;
+
+export function GET() {
+  return new Response(CONTENT, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
+}
