@@ -48,7 +48,7 @@ const FOOTER_COLUMNS = [
   {
     heading: 'Employers',
     links: [
-      { label: 'Post a job', href: '/#employers' },
+      { label: 'Post a job', href: 'https://cazini.co.ke/' },
       { label: 'Hire verified talent', href: '/#employers' },
       { label: 'Pricing', href: '/#employers' },
       { label: 'Contact sales', href: 'mailto:hello@cazini.ai' },
@@ -57,7 +57,7 @@ const FOOTER_COLUMNS = [
   {
     heading: 'Company',
     links: [
-      { label: 'About Cazini', href: '/#how-it-works' },
+      { label: 'About Cazini', href: '/about' },
       { label: 'Partners', href: 'mailto:hello@cazini.ai' },
       { label: 'Newsroom', href: 'mailto:hello@cazini.ai' },
       { label: 'Careers', href: 'mailto:hello@cazini.ai' },
@@ -288,7 +288,9 @@ export default function HomePage() {
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
             <a
-              href="mailto:hello@cazini.ai?subject=Post%20a%20job%20on%20Cazini"
+              href="https://cazini.co.ke/"
+              target="_blank"
+              rel="noopener"
               className="font-semibold text-[15px] text-white px-[22px] py-3 rounded no-underline transition-colors hover:opacity-90"
               style={{ backgroundColor: GREEN }}
             >
@@ -329,9 +331,9 @@ export default function HomePage() {
         <div className="max-w-[1440px] mx-auto border-t border-gray-50 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[13px] text-gray-400">
           <p>© {new Date().getFullYear()} Cazini. All rights reserved.</p>
           <div className="flex items-center gap-5">
-            <span>Privacy</span>
-            <span>Terms</span>
-            <span>Accessibility</span>
+            <Link href="/privacy" className="no-underline text-gray-400 hover:text-gray-600">Privacy</Link>
+            <Link href="/terms" className="no-underline text-gray-400 hover:text-gray-600">Terms</Link>
+            <Link href="/about" className="no-underline text-gray-400 hover:text-gray-600">About</Link>
           </div>
         </div>
       </footer>
