@@ -11,6 +11,20 @@ const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-gray-300 text-sm
 const labelClass = 'block text-sm font-medium text-gray-700 mb-1.5';
 const PRIMARY = '#148438';
 
+/** Every label states required/optional explicitly, never just an asterisk. */
+function FieldLabel({ text, required }) {
+  return (
+    <label className={labelClass}>
+      {text}{' '}
+      {required ? (
+        <span className="text-red-500">*</span>
+      ) : (
+        <span className="text-gray-400 font-normal text-xs">(optional)</span>
+      )}
+    </label>
+  );
+}
+
 // Maps a kazini_backend requiredDocuments fieldName to the flat field this
 // app collects a URL for. Everything else (other than the résumé, handled
 // separately) is collected as a real file upload via POST /uploads and sent
@@ -63,7 +77,7 @@ function FileDocField({ doc, url, onUploaded, disabled }) {
 
   return (
     <div>
-      <label className={labelClass}>{doc.name} {doc.mandatory && <span className="text-red-500">*</span>}</label>
+      <FieldLabel text={doc.name} required={doc.mandatory} />
       <input
         className={inputClass} type="file" accept="application/pdf,image/jpeg,image/png,image/webp"
         onChange={handleChange} disabled={disabled || uploading}
@@ -80,7 +94,7 @@ function ExtraFields({ job, urlDocs, urlFields, setUrlFields, fileDocs, fileDocs
     <>
       {urlDocs.map((d) => (
         <div key={d._id || d.key}>
-          <label className={labelClass}>{d.name} {d.mandatory && <span className="text-red-500">*</span>}</label>
+          <FieldLabel text={d.name} required={d.mandatory} />
           <input
             className={inputClass} type="url" placeholder="https://…"
             value={urlFields[d.key]}
@@ -100,7 +114,7 @@ function ExtraFields({ job, urlDocs, urlFields, setUrlFields, fileDocs, fileDocs
       ))}
       {(job.customQuestions || []).map((q, i) => (
         <div key={q._id || i}>
-          <label className={labelClass}>{q.question} {q.mandatory && <span className="text-red-500">*</span>}</label>
+          <FieldLabel text={q.question} required={q.mandatory} />
           <input
             className={inputClass}
             value={answers[i] || ''}
@@ -184,7 +198,7 @@ function SignedInApplyForm({ job, holder, onSuccess }) {
       {error && <div className="mb-5 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>}
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className={labelClass}>Cover Letter {job.requireCoverLetter && <span className="text-red-500">*</span>}</label>
+          <FieldLabel text="Cover Letter" required={job.requireCoverLetter} />
           <textarea className={inputClass} rows={5} maxLength={500} value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)}
             placeholder="Briefly say why you're a good fit (max 500 characters)" disabled={loading} />
         </div>
@@ -302,7 +316,7 @@ function GuestApplyForm({ job, onSuccess }) {
           />
         </div>
         <div>
-          <label className={labelClass}>Cover Letter {job.requireCoverLetter && <span className="text-red-500">*</span>}</label>
+          <FieldLabel text="Cover Letter" required={job.requireCoverLetter} />
           <textarea className={inputClass} rows={5} maxLength={500} value={coverLetter} onChange={(e) => setCoverLetter(e.target.value)}
             placeholder="Briefly say why you're a good fit (max 500 characters)" disabled={loading} />
         </div>
