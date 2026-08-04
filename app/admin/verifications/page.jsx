@@ -77,7 +77,7 @@ export default function AdminVerificationsPage() {
         </p>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20, borderBottom: '1px solid var(--color-border)' }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, borderBottom: '1px solid var(--color-border)', overflowX: 'auto' }}>
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -91,6 +91,8 @@ export default function AdminVerificationsPage() {
               color: t.key === activeTab ? 'var(--color-primary)' : 'var(--color-text-muted)',
               fontWeight: t.key === activeTab ? 600 : 400,
               paddingBottom: 10,
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
             }}
           >
             {t.icon} {t.label}

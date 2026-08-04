@@ -120,7 +120,7 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginTop: 20 }}>
+      <div className="grid-2" style={{ marginTop: 20 }}>
         {/* Recent holders */}
         <div className="card">
           <div className="card-header">
@@ -199,7 +199,7 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginTop: 20 }}>
+      <div className="grid-2" style={{ marginTop: 20 }}>
         {/* Activity by action */}
         <div className="card">
           <div className="card-header">

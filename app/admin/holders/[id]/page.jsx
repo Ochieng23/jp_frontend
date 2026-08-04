@@ -82,7 +82,7 @@ function EditProfileModal({ holder, onClose, onSuccess }) {
           <input className="form-input" name="full_name" value={form.full_name} onChange={handleChange} disabled={loading} />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div className="grid-2" style={{ gap: 12 }}>
           <div className="form-group">
             <label className="form-label">Phone</label>
             <input className="form-input" name="phone" value={form.phone} onChange={handleChange} disabled={loading} />
