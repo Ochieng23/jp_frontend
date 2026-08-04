@@ -76,7 +76,7 @@ export default function RegisterPage() {
               <CaziniLogo markSize={46} wordmarkClassName="text-2xl" variant="light" />
             </Link>
           </div>
-          <h2 className="text-2xl font-bold mb-4 leading-tight">Start your journey today</h2>
+          <p className="text-2xl font-bold mb-4 leading-tight">Start your journey today</p>
           <p className="text-primary-50 text-sm leading-relaxed mb-8">
             Create your portable credential passport in minutes. Free to use, works anywhere.
           </p>

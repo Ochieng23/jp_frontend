@@ -2,6 +2,11 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import DashboardShell from '../../components/layout/DashboardShell';
 
+// Private, per-user pages — keep the whole dashboard out of search indexes.
+export const metadata = {
+  robots: { index: false, follow: false },
+};
+
 export default function DashboardLayout({ children }) {
   const cookieStore = cookies();
   // Guard on the refresh token (7-day TTL) rather than the access token (15-min TTL).

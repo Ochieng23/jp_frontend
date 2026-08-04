@@ -56,7 +56,7 @@ export default function LoginPage() {
               <CaziniLogo markSize={46} wordmarkClassName="text-2xl" variant="light" />
             </Link>
           </div>
-          <h2 className="text-3xl font-bold mb-4 leading-tight">Your credentials travel with you</h2>
+          <p className="text-3xl font-bold mb-4 leading-tight">Your credentials travel with you</p>
           <p className="text-primary-200 text-base mb-12 leading-relaxed">
             A portable digital credential wallet for jobseekers everywhere.
           </p>
