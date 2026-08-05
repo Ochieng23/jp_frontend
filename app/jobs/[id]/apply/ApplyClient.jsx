@@ -400,6 +400,8 @@ export default function ApplyPage() {
     );
   }
 
+  const isClosed = job.applicationDeadline && new Date(job.applicationDeadline) < new Date();
+
   const renderBody = (alreadyApplied) => (
     <div className="min-h-screen bg-white">
       <PublicNav />
@@ -417,6 +419,16 @@ export default function ApplyPage() {
               <h1 className="text-xl font-bold text-gray-900 mb-1">You&apos;ve already applied</h1>
               <p className="text-sm text-gray-500">You applied to {job.title} at {job.employer?.name}.</p>
               <Link href="/jobs/applications" className="inline-block mt-6 text-sm font-semibold no-underline" style={{ color: PRIMARY }}>View my applications →</Link>
+            </div>
+          ) : isClosed ? (
+            <div className="text-center py-10">
+              <div className="w-14 h-14 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center mx-auto mb-4 text-2xl">⏱</div>
+              <h1 className="text-xl font-bold text-gray-900 mb-1">Applications closed</h1>
+              <p className="text-sm text-gray-500">
+                The application deadline for {job.title} at {job.employer?.name} passed on{' '}
+                {new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium' }).format(new Date(job.applicationDeadline))}.
+              </p>
+              <Link href="/jobs" className="inline-block mt-6 text-sm font-semibold no-underline" style={{ color: PRIMARY }}>Browse open jobs →</Link>
             </div>
           ) : (
             <>

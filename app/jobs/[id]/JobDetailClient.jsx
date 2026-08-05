@@ -82,10 +82,13 @@ function AlreadyAppliedCheck({ jobId, children }) {
  * down; this component only adds the signed-in/apply interactivity. */
 export default function JobDetailClient({ job }) {
   const { user } = useOptionalUser();
+  const isClosed = job.applicationDeadline && new Date(job.applicationDeadline) < new Date();
 
   const ApplyButton = ({ alreadyApplied }) => (
     alreadyApplied ? (
       <span className="inline-block text-sm font-semibold bg-green-50 text-green-700 px-4 py-2.5 rounded-xl">✓ Applied</span>
+    ) : isClosed ? (
+      <span className="inline-block text-sm font-semibold bg-gray-100 text-gray-500 px-4 py-2.5 rounded-xl">Applications closed</span>
     ) : (
       <Link
         href={`/jobs/${job.id}/apply`}

@@ -97,11 +97,9 @@ export default function HomePage() {
 
   const stats = useMemo(() => {
     if (isLoading || error || jobs.length === 0) return null;
-    const employers = new Set(jobs.map((j) => j.employer?.id).filter(Boolean));
     const industries = new Set(jobs.map((j) => j.companyIndustry).filter(Boolean));
     return [
       { label: 'Open roles', value: total ?? jobs.length },
-      { label: 'Employers', value: employers.size },
       { label: 'Industries', value: industries.size },
     ];
   }, [jobs, total, isLoading, error]);
