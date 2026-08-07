@@ -12,7 +12,10 @@ const ADMIN_SECTIONS = [
   },
   {
     label: 'People',
-    links: [{ href: '/admin/holders', label: 'Holders', icon: '🧑‍💻' }],
+    links: [
+      { href: '/admin/holders', label: 'Holders', icon: '🧑‍💻' },
+      { href: '/admin/talent-pool', label: 'Talent Pool', icon: '🎯' },
+    ],
   },
   {
     label: 'Verifications',

@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { get, patch } from '../../../lib/api';
+import { INDUSTRIES } from '../../../lib/industries';
+import { SENIORITY_LEVELS, SENIORITY_LABELS } from '../../../lib/talentClassification';
 
 const ROLES = ['holder', 'org_admin', 'platform_admin'];
 
@@ -73,17 +75,25 @@ function ChangeRoleModal({ holder, onClose, onSuccess }) {
 export default function AdminHoldersPage() {
   const router = useRouter();
   const [search, setSearch] = useState('');
+  const [industry, setIndustry] = useState('');
+  const [seniority, setSeniority] = useState('');
+  const [expertiseArea, setExpertiseArea] = useState('');
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [roleTarget, setRoleTarget] = useState(null);
 
-  const load = useCallback(async (searchTerm) => {
+  const load = useCallback(async (filters) => {
     setIsLoading(true);
     setError(null);
     try {
-      const query = searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : '';
+      const params = new URLSearchParams();
+      if (filters.search) params.set('search', filters.search);
+      if (filters.industry) params.set('industry', filters.industry);
+      if (filters.seniority) params.set('seniority_level', filters.seniority);
+      if (filters.expertiseArea) params.set('expertise_area', filters.expertiseArea);
+      const query = params.toString() ? `?${params.toString()}` : '';
       const res = await get(`/admin/holders${query}`);
       setRows(res.data || []);
       setTotal(res.total || 0);
@@ -94,13 +104,32 @@ export default function AdminHoldersPage() {
     }
   }, []);
 
+  // Seeded from the URL (not useSearchParams, to keep this page's static
+  // shell simple) so links in from /admin/talent-pool land pre-filtered.
   useEffect(() => {
-    load('');
+    const params = new URLSearchParams(window.location.search);
+    const initial = {
+      search: params.get('search') || '',
+      industry: params.get('industry') || '',
+      seniority: params.get('seniority_level') || '',
+      expertiseArea: params.get('expertise_area') || '',
+    };
+    setSearch(initial.search);
+    setIndustry(initial.industry);
+    setSeniority(initial.seniority);
+    setExpertiseArea(initial.expertiseArea);
+    load(initial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [load]);
 
   function handleSearchSubmit(e) {
     e.preventDefault();
-    load(search);
+    load({ search, industry, seniority, expertiseArea });
+  }
+
+  function handleFilterChange(setter, field, value) {
+    setter(value);
+    load({ search, industry, seniority, expertiseArea, [field]: value });
   }
 
   return (
@@ -121,7 +150,7 @@ export default function AdminHoldersPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSearchSubmit} style={{ marginBottom: 20, display: 'flex', gap: 10 }}>
+      <form onSubmit={handleSearchSubmit} style={{ marginBottom: 20, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <input
           className="form-input"
           style={{ maxWidth: 320 }}
@@ -129,8 +158,41 @@ export default function AdminHoldersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        <select
+          className="form-input"
+          style={{ maxWidth: 220 }}
+          value={industry}
+          onChange={(e) => handleFilterChange(setIndustry, 'industry', e.target.value)}
+        >
+          <option value="">All industries (AI)</option>
+          {INDUSTRIES.map((i) => <option key={i} value={i}>{i}</option>)}
+        </select>
+        <select
+          className="form-input"
+          style={{ maxWidth: 180 }}
+          value={seniority}
+          onChange={(e) => handleFilterChange(setSeniority, 'seniority', e.target.value)}
+        >
+          <option value="">All seniority</option>
+          {SENIORITY_LEVELS.map((s) => <option key={s} value={s}>{SENIORITY_LABELS[s]}</option>)}
+        </select>
         <button type="submit" className="btn btn-secondary">Search</button>
       </form>
+
+      {expertiseArea && (
+        <div style={{ marginBottom: 16 }}>
+          <span className="pill pill-active">
+            Expertise: {expertiseArea}
+            <button
+              type="button"
+              onClick={() => handleFilterChange(setExpertiseArea, 'expertiseArea', '')}
+              style={{ marginLeft: 8, background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', fontWeight: 700 }}
+            >
+              ×
+            </button>
+          </span>
+        </div>
+      )}
 
       {isLoading && (
         <div className="loading-center">
@@ -160,6 +222,7 @@ export default function AdminHoldersPage() {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>AI Classification</th>
                 <th>Registered</th>
                 <th>Actions</th>
               </tr>
@@ -167,6 +230,7 @@ export default function AdminHoldersPage() {
             <tbody>
               {rows.map((holder) => {
                 const id = holder._id || holder.id;
+                const tc = holder.talent_classification;
                 return (
                   <tr key={id}>
                     <td style={{ fontWeight: 600 }}>{holder.full_name}</td>
@@ -175,6 +239,16 @@ export default function AdminHoldersPage() {
                       <span className={`pill ${holder.role === 'platform_admin' ? 'pill-active' : 'pill-pending'}`}>
                         {holder.role}
                       </span>
+                    </td>
+                    <td>
+                      {tc ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                          <span style={{ fontSize: 13, fontWeight: 600 }}>{tc.primary_industry}</span>
+                          <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{SENIORITY_LABELS[tc.seniority_level] || tc.seniority_level}</span>
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>Not classified</span>
+                      )}
                     </td>
                     <td style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>
                       {new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium' }).format(new Date(holder.created_at))}

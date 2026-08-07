@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { get, patch, del } from '../../../../lib/api';
+import { get, post, patch, del } from '../../../../lib/api';
 import { INDUSTRIES } from '../../../../lib/industries';
+import { SENIORITY_LABELS } from '../../../../lib/talentClassification';
 
 function formatDate(d) {
   if (!d) return '—';
@@ -211,6 +212,119 @@ function DeleteHolderModal({ holder, onClose, onConfirm, loading }) {
   );
 }
 
+const SOURCE_LINKS = {
+  education: 'education',
+  work_experience: 'work_experience',
+  credential: 'credentials',
+};
+
+/** AI-derived talent classification — shows the current call plus a
+ * classify/re-classify action. Evidence entries link back to the record
+ * they cite so an admin can verify the AI's reasoning, not just trust it. */
+function TalentProfileCard({ holder, entriesBySource, onClassified }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const tc = holder.talent_classification;
+
+  async function handleClassify() {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await post(`/admin/holders/${holder._id || holder.id}/classify`, {});
+      onClassified(res.data);
+    } catch (err) {
+      setError(err.message || 'Classification failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="card" style={{ marginBottom: 20 }}>
+      <div className="card-header">
+        <h2 className="card-title">🤖 AI Talent Profile</h2>
+        <button className="btn btn-secondary btn-sm" onClick={handleClassify} disabled={loading}>
+          {loading ? 'Classifying…' : tc ? 'Re-classify' : 'Classify'}
+        </button>
+      </div>
+
+      {error && <div className="alert alert-error" style={{ marginBottom: 12 }}>{error}</div>}
+
+      {!tc ? (
+        <p style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>
+          Not yet classified. Run the classifier to derive industry, expertise, and seniority from this holder&apos;s profile.
+        </p>
+      ) : (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 16 }}>
+            <div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Primary Industry</div>
+              <span className="pill pill-active">{tc.primary_industry}</span>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: 4 }}>Seniority</div>
+              <span className="pill pill-pending">{SENIORITY_LABELS[tc.seniority_level] || tc.seniority_level}</span>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: 2 }}>Years of Experience</div>
+              <div style={{ fontSize: 14 }}>{tc.years_of_experience ?? '—'}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: 2 }}>Confidence</div>
+              <div style={{ fontSize: 14 }}>{Math.round((tc.confidence || 0) * 100)}%</div>
+            </div>
+          </div>
+
+          {tc.secondary_industries?.length > 0 && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: 6 }}>Also experienced in</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {tc.secondary_industries.map((i) => <span key={i} className="pill pill-pending">{i}</span>)}
+              </div>
+            </div>
+          )}
+
+          {tc.expertise_areas?.length > 0 && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: 6 }}>Expertise Areas</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {tc.expertise_areas.map((a) => (
+                  <span key={a} className="pill" style={{ background: 'var(--color-bg)', color: 'var(--color-text)' }}>{a}</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
+            {tc.summary}
+          </p>
+
+          {tc.evidence?.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: 6 }}>Evidence</div>
+              <ul style={{ fontSize: 13, color: 'var(--color-text-muted)', paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {tc.evidence.map((e, i) => {
+                  const record = entriesBySource[SOURCE_LINKS[e.source]]?.find((r) => r._id === e.id);
+                  return (
+                    <li key={i}>
+                      {record ? <strong>{record.title || record.job_title || record.qualification}: </strong> : null}
+                      {e.note}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          <p style={{ fontSize: 11, color: 'var(--color-text-muted)', marginTop: 16 }}>
+            Classified {formatDate(tc.classified_at)} · {tc.model}
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function AdminHolderDetailPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -356,6 +470,12 @@ export default function AdminHolderDetailPage() {
           )}
         </div>
       </div>
+
+      <TalentProfileCard
+        holder={holder}
+        entriesBySource={{ credentials, education, work_experience }}
+        onClassified={(updatedHolder) => setProfile((prev) => ({ ...prev, holder: updatedHolder }))}
+      />
 
       {/* Credentials */}
       <div className="card" style={{ marginBottom: 20 }}>
